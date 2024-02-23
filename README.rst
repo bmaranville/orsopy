@@ -8,8 +8,8 @@ orsopy
 .. image:: https://github.com/reflectivity/orsopy/actions/workflows/pytest.yml/badge.svg
         :target: https://github.com/reflectivity/orsopy/actions/workflows/pytest.yml
 
-.. image:: https://github.com/reflectivity/orsopy/actions/workflows/docs_build.yml/badge.svg
-        :target: https://github.com/reflectivity/orsopy/actions/workflows/docs_build.yml
+.. image:: https://github.com/bmaranville/orsopy/actions/workflows/docs_build.yml/badge.svg
+        :target: https://github.com/bmaranville/orsopy/actions/workflows/docs_build.yml
 
 .. image:: https://readthedocs.org/projects/orsopy/badge/?version=latest
         :target: https://orsopy.readthedocs.io/en/latest/?version=latest

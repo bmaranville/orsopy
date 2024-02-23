@@ -38,4 +38,4 @@ Features
 .. _`Documents`: https://orsopy.readthedocs.io/en/latest/documents.html
 .. _`contribute`: https://orsopy.readthedocs.io/en/latest/contributing.html
 .. _`ORSO Slack`: https://join.slack.com/t/orso-co/shared_invite/zt-z7p3v89g-~JgCbzcxurQP6ufqdfTCfw
-.. _`Reading and writing of ORSO specification reduced reflectivity files`: modules.html#fileio
+.. _`Reading and writing of ORSO specification reduced reflectivity files`: https://bmaranville.github.io/orsopy/modules.html#fileio

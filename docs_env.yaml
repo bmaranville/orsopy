@@ -11,6 +11,10 @@ dependencies:
   # This list is just an example
   - python=3.10
   - numpy
+  - pint
+  - pytest
+  - h5py
+  - typing_extensions
   - sphinx
   - sphinx_rtd_theme
   - sphinxcontrib-bibtex

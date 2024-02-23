@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'orsopy'
-copyright = "2021, ORSO"
+copyright = "2024, ORSO"
 author = "ORSO"
 
 # The version info for the project you're documenting, acts as replacement

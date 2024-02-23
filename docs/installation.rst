@@ -5,8 +5,8 @@ Installation
 ============
 
 
-Stable release
---------------
+Stable release: pip
+-------------------
 
 To install orsopy, run this command in your terminal:
 
@@ -22,6 +22,19 @@ you through the process.
 .. _pip: https://pip.pypa.io
 .. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
 
+
+Stable release: conda-forge
+---------------------------
+
+To install orsopy with conda, run this command in your terminal:
+
+.. code-block:: console
+
+    $ conda install orsopy -c conda-forge
+
+If you don't have conda installed, please consult these `instructions for a minimal (miniforge) conda install`_.
+
+.. _`instructions for a minimal (miniforge) conda install`: https://github.com/conda-forge/miniforge
 
 From sources
 ------------

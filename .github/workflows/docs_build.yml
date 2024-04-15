@@ -34,4 +34,4 @@ jobs:
           dir_docs: docs
           sphinx-apidoc-opts: '--separate -o . ../'
           sphinx-apidoc-exclude: '../*setup* ../*.ipynb'
-          sphinx-opts: ''
+          sphinx-opts: '-M coverage'

@@ -1,0 +1,7 @@
+orsopy.slddb.tests.test\_dbmaterial module
+==========================================
+
+.. automodule:: orsopy.slddb.tests.test_dbmaterial
+   :members:
+   :undoc-members:
+   :show-inheritance:

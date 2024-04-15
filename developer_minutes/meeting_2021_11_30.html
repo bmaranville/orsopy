@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer Meeting 2021-11-31 &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="../_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Developer Meeting 2021-11-31</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/developer_minutes/meeting_2021_11_30.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="developer-meeting-2021-11-31">
+<h1>Developer Meeting 2021-11-31<a class="headerlink" href="#developer-meeting-2021-11-31" title="Link to this heading"></a></h1>
+<p><strong>Present</strong>: Andrew Caruana (AC), Artur Glavic (AG),  Brian Maranville (BM), Andrew McCluskey (minutes author, AM)), and Andrew Nelson (AN).</p>
+<p><strong>Apologies</strong>: Max Skoda and Jochen Stahn (sound not working on zoom).</p>
+<section id="minutes">
+<h2>Minutes<a class="headerlink" href="#minutes" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Should we bring <code class="docutils literal notranslate"><span class="pre">slddb</span></code> (<a class="reference external" href="https://github.com/reflectivity/slddb">slddb link</a>) into the main <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> package and if so how should this be achieved?</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>The original purpose of <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> is a place for all code related to ORSO packages, not just to serve the <code class="docutils literal notranslate"><span class="pre">fileio</span></code> functionality.
+However, it is important to be careful in future when selecting what should and should not be included in the package.</p></li>
+<li><p>There was a discussion regarding the differences between <code class="docutils literal notranslate"><span class="pre">slddb</span></code> and the <code class="docutils literal notranslate"><span class="pre">periodictable</span></code> package.
+AG noted that the primary purpose of <code class="docutils literal notranslate"><span class="pre">slddb</span></code> is to be a database for scattering length densities which is the maiin distinction.
+Additionally, AG identified the value to packaging <code class="docutils literal notranslate"><span class="pre">slddb</span></code> within <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> that analysis packages would only require a single dependency to access the benefits of both.</p></li>
+<li><p>The importance of not adding a database to the <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> package was raised by BM, however, AG pointed out that the Python package for accessing the database as already well divorced from the database.
+This removed BM’s original worries regarding merging the projects.</p></li>
+<li><p>AN commented that it is important to be clear on the process that would change the value of a member of the database.
+It was suggested that the documentation on this process which is present on the <code class="docutils literal notranslate"><span class="pre">slddb</span></code> web interface <a class="reference external" href="https://slddb.esss.dk/slddb/about">about</a> page, could be mirrored in the <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> documentation.</p></li>
+<li><p>It was broadly agreed that bringing the <code class="docutils literal notranslate"><span class="pre">slddb</span></code> python code into <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> was a good idea and it should be done by adding the package as a second submodule, i.e. <code class="docutils literal notranslate"><span class="pre">orsopy.slddb</span></code>.</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Should there be a standard formatting that we agree to in <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> and if so what should the rules be?</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>AN introduced the motivation for collaborative projects towards having a common code style (via formatting rules).</p></li>
+<li><p>It was broadly agreed that a common style is beneficial, however, AG would like to see it applied in a soft fashion, i.e. a pull request does not fail for the wrong style (this could be offputting to new contributors).</p></li>
+<li><p>AN and AM both felt strongly that incorrectly formatted could should not be able to be merged, however, agree that it should be clear <strong>why</strong> the tests have failed.</p></li>
+<li><p>AC and AG both noted that there should be documentation explaining how to get autoformatter working in common IDEs (i.e. PyCharm and VSCode).</p></li>
+<li><p>There was agreement that we can try using <code class="docutils literal notranslate"><span class="pre">black</span></code> autoformatting with a line length of 120.</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>How should we manage releases?</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>There was an initial clarification of the difference between versions of <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> the Python package and the ORSO file format.
+It was made clear that these are distinct, i.e. a version number bump in <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> is not the same as a change to the file format version.</p></li>
+<li><p>Initially there was the suggestion of releasing with every PR, however it was worried that this might have a saturation effect.</p></li>
+<li><p>AM suggested that when a given developer feel that a new micro-version increment is necessary, they should open a PR containing solely a bump to the version number and a complete update of the CHANGELOG.
+Then the discussion in this PR will focus on (1) if a new release is necessary and (2) if the CHANGELOG is upto date.
+This approach will also allow new features that someone would like in a given release (i.e. in a another PR that is in review) to be expedited if necessary.</p></li>
+<li><p>This process was generally seen as acceptable and should be implemented, and more importantly documented.</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p>General governance</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>AM raised the question of if we should include code review and approval requirements on pull requests.
+It was felt that currently this should not be introduced, as so far we are working in a rather dynamic fashion and this could be limited, furthermore we have been polite so far with asking for code review when it is necessary.
+However, it was accepted that once stable, code review should be required.</p></li>
+<li><p>AN raised the issue of “best practice” for contributing (i.e. forking the repo and working on a feature branch there).
+This is currently mentioned in the <a class="reference external" href="https://github.com/reflectivity/orsopy/blob/main/CONTRIBUTING.rst">contributing guidelines</a> but these should be improved to include more information, i.e. AC would like an easy reminder for “how to catch up a fork”.</p></li>
+<li><p>BM asked about who was an admin on the PyPI page, currently this is just AM and AG.
+However, anyone is welcome.</p></li>
+<li><p>BM also raised (after the fact, <a class="reference external" href="https://github.com/reflectivity/orsopy/pull/63">https://github.com/reflectivity/orsopy/pull/63</a>) the importance of not using <code class="docutils literal notranslate"><span class="pre">force</span> <span class="pre">push</span></code> except in extraordinary circumstances.
+This has been supported by AN and should be included in the contributing guidelines.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="actions">
+<h2>Actions<a class="headerlink" href="#actions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Move the <code class="docutils literal notranslate"><span class="pre">slddb</span></code> code to the <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> repository (AG).</p></li>
+<li><p>Mirror the relevant documentation for finding problems in the <code class="docutils literal notranslate"><span class="pre">slddb</span></code> in the <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> documentation (AG).</p></li>
+<li><p>Add configuration for <code class="docutils literal notranslate"><span class="pre">black</span></code> to the <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> repository (AM)</p></li>
+<li><p>Add format checking to the CI scripts, ideally in a way that it is clear how to resolve problems (AM)</p></li>
+<li><p>Add documentation to <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> making clear the different between <code class="docutils literal notranslate"><span class="pre">orsopy</span></code> version and the file format version.</p></li>
+<li><p>Document process associated with releases (AM)</p></li>
+<li><p>Improving the contributing guidelines to be more accessible to new developers and link from readthedocs page (AM)</p></li>
+<li><p>Contact AM or AG if you want to be an admin on the PyPI page (all)</p></li>
+<li><p>Add a comment about not using <code class="docutils literal notranslate"><span class="pre">force</span> <span class="pre">push</span></code> in the contributing guidelines.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+orsopy.slddb.tests.test\_converters module
+==========================================
+
+.. automodule:: orsopy.slddb.tests.test_converters
+   :members:
+   :undoc-members:
+   :show-inheritance:

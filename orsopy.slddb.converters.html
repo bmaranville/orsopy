@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.slddb.converters module &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=6efca38a"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">orsopy.slddb.converters module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/orsopy.slddb.converters.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-orsopy.slddb.converters">
+<span id="orsopy-slddb-converters-module"></span><h1>orsopy.slddb.converters module<a class="headerlink" href="#module-orsopy.slddb.converters" title="Link to this heading"></a></h1>
+<p>Classes for conversion of specific data into sqlite types and back.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Converter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">Converter</span></span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#Converter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.Converter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Base class for all other converters, can’t be used stand alone.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Converter.sql_type">
+<span class="sig-name descname"><span class="pre">sql_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TEXT'</span></em><a class="headerlink" href="#orsopy.slddb.converters.Converter.sql_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Converter.html_list">
+<span class="sig-name descname"><span class="pre">html_list</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#orsopy.slddb.converters.Converter.html_list" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Converter.comparator">
+<span class="sig-name descname"><span class="pre">comparator</span></span><a class="headerlink" href="#orsopy.slddb.converters.Converter.comparator" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="orsopy.slddb.comparators.html#orsopy.slddb.comparators.GenericComparator" title="orsopy.slddb.comparators.GenericComparator"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericComparator</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Converter.html_title">
+<span class="sig-name descname"><span class="pre">html_title</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.slddb.converters.Converter.html_title" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Converter.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#Converter.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.Converter.validate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Converter.convert">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#Converter.convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.Converter.convert" title="Link to this definition"></a></dt>
+<dd><p>Converts data to SQLite format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Converter.revert">
+<span class="sig-name descname"><span class="pre">revert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#Converter.revert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.Converter.revert" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Converter.revert_serializable">
+<span class="sig-name descname"><span class="pre">revert_serializable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#Converter.revert_serializable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.Converter.revert_serializable" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Converter.html_input">
+<span class="sig-name descname"><span class="pre">html_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#Converter.html_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.Converter.html_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">CType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fromtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_repstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#orsopy.slddb.converters.Converter" title="orsopy.slddb.converters.Converter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Converter</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CType.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CType.convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CType.convert" title="Link to this definition"></a></dt>
+<dd><p>Converts data to SQLite format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CType.revert">
+<span class="sig-name descname"><span class="pre">revert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CType.revert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CType.revert" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CDate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">CDate</span></span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CDate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CDate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#orsopy.slddb.converters.Converter" title="orsopy.slddb.converters.Converter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Converter</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CDate.sql_type">
+<span class="sig-name descname"><span class="pre">sql_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TEXT'</span></em><a class="headerlink" href="#orsopy.slddb.converters.CDate.sql_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CDate.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CDate.convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CDate.convert" title="Link to this definition"></a></dt>
+<dd><p>Converts data to SQLite format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CDate.revert">
+<span class="sig-name descname"><span class="pre">revert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CDate.revert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CDate.revert" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CDate.revert_serializable">
+<span class="sig-name descname"><span class="pre">revert_serializable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CDate.revert_serializable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CDate.revert_serializable" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CDate.html_input">
+<span class="sig-name descname"><span class="pre">html_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CDate.html_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CDate.html_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CFormula">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">CFormula</span></span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CFormula"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CFormula" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#orsopy.slddb.converters.Converter" title="orsopy.slddb.converters.Converter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Converter</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CFormula.comparator">
+<span class="sig-name descname"><span class="pre">comparator</span></span><a class="headerlink" href="#orsopy.slddb.converters.CFormula.comparator" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="orsopy.slddb.comparators.html#orsopy.slddb.comparators.FormulaComparator" title="orsopy.slddb.comparators.FormulaComparator"><code class="xref py py-class docutils literal notranslate"><span class="pre">FormulaComparator</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CFormula.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CFormula.convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CFormula.convert" title="Link to this definition"></a></dt>
+<dd><p>Converts data to SQLite format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CFormula.revert">
+<span class="sig-name descname"><span class="pre">revert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CFormula.revert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CFormula.revert" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CFormula.html_input">
+<span class="sig-name descname"><span class="pre">html_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CFormula.html_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CFormula.html_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.ValidatedString">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">ValidatedString</span></span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#ValidatedString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.ValidatedString" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#orsopy.slddb.converters.CType" title="orsopy.slddb.converters.CType"><code class="xref py py-class docutils literal notranslate"><span class="pre">CType</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.ValidatedString.regex">
+<span class="sig-name descname"><span class="pre">regex</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.slddb.converters.ValidatedString.regex" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.ValidatedString.placeholder">
+<span class="sig-name descname"><span class="pre">placeholder</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#orsopy.slddb.converters.ValidatedString.placeholder" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.ValidatedString.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#ValidatedString.convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.ValidatedString.convert" title="Link to this definition"></a></dt>
+<dd><p>Converts data to SQLite format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.ValidatedString.html_input">
+<span class="sig-name descname"><span class="pre">html_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#ValidatedString.html_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.ValidatedString.html_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CUrl">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">CUrl</span></span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CUrl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CUrl" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#orsopy.slddb.converters.ValidatedString" title="orsopy.slddb.converters.ValidatedString"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidatedString</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CUrl.regex">
+<span class="sig-name descname"><span class="pre">regex</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^https?://(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\\.)+(?:[A-Z]{2,6}\\.?|[A-Z0-9-]{2,}\\.?)|localhost|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})(?::\\d+)?(?:/?|[/?]\\S+)$',</span> <span class="pre">re.IGNORECASE)</span></em><a class="headerlink" href="#orsopy.slddb.converters.CUrl.regex" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CUrl.placeholder">
+<span class="sig-name descname"><span class="pre">placeholder</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'http://www.your_website.net'</span></em><a class="headerlink" href="#orsopy.slddb.converters.CUrl.placeholder" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CMail">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">CMail</span></span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CMail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CMail" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#orsopy.slddb.converters.CType" title="orsopy.slddb.converters.CType"><code class="xref py py-class docutils literal notranslate"><span class="pre">CType</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CMail.placeholder">
+<span class="sig-name descname"><span class="pre">placeholder</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'your.name&#64;domain.net'</span></em><a class="headerlink" href="#orsopy.slddb.converters.CMail.placeholder" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CMail.html_input">
+<span class="sig-name descname"><span class="pre">html_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CMail.html_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CMail.html_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Cdoi">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">Cdoi</span></span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#Cdoi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.Cdoi" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#orsopy.slddb.converters.ValidatedString" title="orsopy.slddb.converters.ValidatedString"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidatedString</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Cdoi.regex">
+<span class="sig-name descname"><span class="pre">regex</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^https://doi.org/(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\\.)+(?:[A-Z]{2,6}\\.?|[A-Z0-9-]{2,}\\.?)|localhost|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})(?::\\d+)?(?:/?|[/?]\\S+)$',</span> <span class="pre">re.IGNORECASE)</span></em><a class="headerlink" href="#orsopy.slddb.converters.Cdoi.regex" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Cdoi.placeholder">
+<span class="sig-name descname"><span class="pre">placeholder</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://doi.org/your/ref'</span></em><a class="headerlink" href="#orsopy.slddb.converters.Cdoi.placeholder" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Cdoi.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#Cdoi.convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.Cdoi.convert" title="Link to this definition"></a></dt>
+<dd><p>Converts data to SQLite format</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Ccas">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">Ccas</span></span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#Ccas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.Ccas" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#orsopy.slddb.converters.ValidatedString" title="orsopy.slddb.converters.ValidatedString"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidatedString</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Ccas.regex">
+<span class="sig-name descname"><span class="pre">regex</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('\\b[1-9][0-9]{1,5}-\\d{2}-\\d\\b',</span> <span class="pre">re.IGNORECASE)</span></em><a class="headerlink" href="#orsopy.slddb.converters.Ccas.regex" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.Ccas.placeholder">
+<span class="sig-name descname"><span class="pre">placeholder</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'xxxxxxx-yy-z'</span></em><a class="headerlink" href="#orsopy.slddb.converters.Ccas.placeholder" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CArray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">CArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CArray" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#orsopy.slddb.converters.Converter" title="orsopy.slddb.converters.Converter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Converter</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CArray.sql_type">
+<span class="sig-name descname"><span class="pre">sql_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BLOB'</span></em><a class="headerlink" href="#orsopy.slddb.converters.CArray.sql_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CArray.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CArray.convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CArray.convert" title="Link to this definition"></a></dt>
+<dd><p>Converts data to SQLite format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CArray.revert">
+<span class="sig-name descname"><span class="pre">revert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CArray.revert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CArray.revert" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CArray.revert_serializable">
+<span class="sig-name descname"><span class="pre">revert_serializable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CArray.revert_serializable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CArray.revert_serializable" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CLimited">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">CLimited</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fromtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">up_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_repstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CLimited"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CLimited" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#orsopy.slddb.converters.CType" title="orsopy.slddb.converters.CType"><code class="xref py py-class docutils literal notranslate"><span class="pre">CType</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CLimited.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CLimited.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CLimited.validate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CLimited.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CLimited.convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CLimited.convert" title="Link to this definition"></a></dt>
+<dd><p>Converts data to SQLite format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CLimited.html_input">
+<span class="sig-name descname"><span class="pre">html_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CLimited.html_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CLimited.html_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CComplex">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">CComplex</span></span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CComplex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CComplex" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#orsopy.slddb.converters.CArray" title="orsopy.slddb.converters.CArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">CArray</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CComplex.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CComplex.convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CComplex.convert" title="Link to this definition"></a></dt>
+<dd><p>Converts data to SQLite format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CComplex.revert">
+<span class="sig-name descname"><span class="pre">revert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CComplex.revert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CComplex.revert" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CComplex.revert_serializable">
+<span class="sig-name descname"><span class="pre">revert_serializable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CComplex.revert_serializable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CComplex.revert_serializable" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CComplex.html_input">
+<span class="sig-name descname"><span class="pre">html_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CComplex.html_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CComplex.html_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CSelect">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">CSelect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CSelect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CSelect" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#orsopy.slddb.converters.CType" title="orsopy.slddb.converters.CType"><code class="xref py py-class docutils literal notranslate"><span class="pre">CType</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CSelect.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CSelect.convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CSelect.convert" title="Link to this definition"></a></dt>
+<dd><p>Converts data to SQLite format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CSelect.html_input">
+<span class="sig-name descname"><span class="pre">html_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CSelect.html_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CSelect.html_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CMultiSelect">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.converters.</span></span><span class="sig-name descname"><span class="pre">CMultiSelect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CMultiSelect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CMultiSelect" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#orsopy.slddb.converters.CType" title="orsopy.slddb.converters.CType"><code class="xref py py-class docutils literal notranslate"><span class="pre">CType</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CMultiSelect.html_list">
+<span class="sig-name descname"><span class="pre">html_list</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#orsopy.slddb.converters.CMultiSelect.html_list" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CMultiSelect.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CMultiSelect.convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CMultiSelect.convert" title="Link to this definition"></a></dt>
+<dd><p>Converts data to SQLite format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CMultiSelect.revert">
+<span class="sig-name descname"><span class="pre">revert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CMultiSelect.revert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CMultiSelect.revert" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.converters.CMultiSelect.html_input">
+<span class="sig-name descname"><span class="pre">html_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/converters.html#CMultiSelect.html_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.converters.CMultiSelect.html_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.fileio.orso &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=6efca38a"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing" href="contributing.html" />
+    <link rel="prev" title="orsopy.fileio.reduction" href="orsopy.fileio.reduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">orsopy.fileio.orso</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/orsopy.fileio.orso.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-orsopy.fileio.orso">
+<span id="orsopy-fileio-orso"></span><h1>orsopy.fileio.orso<a class="headerlink" href="#module-orsopy.fileio.orso" title="Link to this heading"></a></h1>
+<p>Implementation of the top level class for the ORSO header.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.Orso">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.fileio.orso.</span></span><span class="sig-name descname"><span class="pre">Orso</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">user_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#Orso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.Orso" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Header" title="orsopy.fileio.base.Header"><code class="xref py py-class docutils literal notranslate"><span class="pre">Header</span></code></a></p>
+<p>The Orso object collects the necessary metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_source</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="orsopy.fileio.data_source.html#orsopy.fileio.data_source.DataSource" title="orsopy.fileio.data_source.DataSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSource</span></code></a></span>) – Information about the origin and ownership of
+the raw data.</p></li>
+<li><p><strong>reduction</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="orsopy.fileio.reduction.html#orsopy.fileio.reduction.Reduction" title="orsopy.fileio.reduction.Reduction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reduction</span></code></a></span>) – Details of the data reduction that has been
+performed. The content of this section should contain enough
+information to rerun the reduction.</p></li>
+<li><p><strong>columns</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Column" title="orsopy.fileio.base.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a>, <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ErrorColumn" title="orsopy.fileio.base.ErrorColumn"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorColumn</span></code></a>]]</span>) – Information about the columns of data that will
+be contained in the file.</p></li>
+<li><p><strong>data_set</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – An identifier for the data set, i.e. if there is
+more than one data set in the object.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.Orso.data_source">
+<span class="sig-name descname"><span class="pre">data_source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="orsopy.fileio.data_source.html#orsopy.fileio.data_source.DataSource" title="orsopy.fileio.data_source.DataSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSource</span></code></a></em><a class="headerlink" href="#orsopy.fileio.orso.Orso.data_source" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.Orso.reduction">
+<span class="sig-name descname"><span class="pre">reduction</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="orsopy.fileio.reduction.html#orsopy.fileio.reduction.Reduction" title="orsopy.fileio.reduction.Reduction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reduction</span></code></a></em><a class="headerlink" href="#orsopy.fileio.orso.Orso.reduction" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.Orso.columns">
+<span class="sig-name descname"><span class="pre">columns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Column" title="orsopy.fileio.base.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a><span class="pre">,</span> <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ErrorColumn" title="orsopy.fileio.base.ErrorColumn"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorColumn</span></code></a><span class="pre">]]</span></em><a class="headerlink" href="#orsopy.fileio.orso.Orso.columns" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.Orso.data_set">
+<span class="sig-name descname"><span class="pre">data_set</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.orso.Orso.data_set" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.Orso.empty">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#Orso.empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.Orso.empty" title="Link to this definition"></a></dt>
+<dd><p>Create an empty instance of the ORSO header with
+all non-optional attributes as <code class="code docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#orsopy.fileio.orso.Orso" title="orsopy.fileio.orso.Orso"><code class="xref py py-class docutils literal notranslate"><span class="pre">Orso</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Empty Orso class, within minimum required columns</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.Orso.column_header">
+<span class="sig-name descname"><span class="pre">column_header</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#Orso.column_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.Orso.column_header" title="Link to this definition"></a></dt>
+<dd><p>An information string that explains what each of the columns
+in a dataset corresponds to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Explanatory string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.Orso.from_difference">
+<span class="sig-name descname"><span class="pre">from_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#Orso.from_difference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.Orso.from_difference" title="Link to this definition"></a></dt>
+<dd><p>Constructs another <a class="reference internal" href="#orsopy.fileio.orso.Orso" title="orsopy.fileio.orso.Orso"><code class="xref py py-class docutils literal notranslate"><span class="pre">Orso</span></code></a> instance from self, and a dict
+containing updated header information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other_dict</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span>) – Contains updated header information.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#orsopy.fileio.orso.Orso" title="orsopy.fileio.orso.Orso"><code class="xref py py-class docutils literal notranslate"><span class="pre">Orso</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new <a class="reference internal" href="#orsopy.fileio.orso.Orso" title="orsopy.fileio.orso.Orso"><code class="xref py py-class docutils literal notranslate"><span class="pre">Orso</span></code></a> object constructed from self, and the
+updated header information.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.Orso.to_difference">
+<span class="sig-name descname"><span class="pre">to_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#Orso.to_difference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.Orso.to_difference" title="Link to this definition"></a></dt>
+<dd><p>A dictionary containing the difference in header information between
+two <a class="reference internal" href="#orsopy.fileio.orso.Orso" title="orsopy.fileio.orso.Orso"><code class="xref py py-class docutils literal notranslate"><span class="pre">Orso</span></code></a> objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#orsopy.fileio.orso.Orso" title="orsopy.fileio.orso.Orso"><code class="xref py py-class docutils literal notranslate"><span class="pre">Orso</span></code></a></span>) – Other header to diff with.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary of the header information difference.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.Orso.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#Orso.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.Orso.to_dict" title="Link to this definition"></a></dt>
+<dd><p>Adds the user data to the returned dictionary.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.Orso.comment">
+<span class="sig-name descname"><span class="pre">comment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.orso.Orso.comment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.OrsoDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.fileio.orso.</span></span><span class="sig-name descname"><span class="pre">OrsoDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#OrsoDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.OrsoDataset" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>info</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#orsopy.fileio.orso.Orso" title="orsopy.fileio.orso.Orso"><code class="xref py py-class docutils literal notranslate"><span class="pre">Orso</span></code></a></span>) – The header information for the reflectivity measurement</p></li>
+<li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>]]</span>) – The numerical data associated with the reflectivity
+measurement. The data has shape <code class="code docutils literal notranslate"><span class="pre">(npnts,</span> <span class="pre">ncols)</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – When <code class="code docutils literal notranslate"><span class="pre">ncols</span> <span class="pre">!=</span> <span class="pre">len(self.info.columns)</span></code>.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.OrsoDataset.info">
+<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#orsopy.fileio.orso.Orso" title="orsopy.fileio.orso.Orso"><code class="xref py py-class docutils literal notranslate"><span class="pre">Orso</span></code></a></em><a class="headerlink" href="#orsopy.fileio.orso.OrsoDataset.info" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.OrsoDataset.data">
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code><span class="pre">]]</span></em><a class="headerlink" href="#orsopy.fileio.orso.OrsoDataset.data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.OrsoDataset.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#OrsoDataset.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.OrsoDataset.from_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.OrsoDataset.header">
+<span class="sig-name descname"><span class="pre">header</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#OrsoDataset.header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.OrsoDataset.header" title="Link to this definition"></a></dt>
+<dd><p>The header string for the ORSO file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Header string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.OrsoDataset.diff_header">
+<span class="sig-name descname"><span class="pre">diff_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#OrsoDataset.diff_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.OrsoDataset.diff_header" title="Link to this definition"></a></dt>
+<dd><p>Return a header string that only contains changes to other
+<a class="reference internal" href="#orsopy.fileio.orso.OrsoDataset" title="orsopy.fileio.orso.OrsoDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrsoDataset</span></code></a> ensure that data_set is the first entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#orsopy.fileio.orso.OrsoDataset" title="orsopy.fileio.orso.OrsoDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrsoDataset</span></code></a></span>) – Other <a class="reference internal" href="#orsopy.fileio.orso.OrsoDataset" title="orsopy.fileio.orso.OrsoDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrsoDataset</span></code></a> to compare against.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Header string with only changes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.OrsoDataset.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#OrsoDataset.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.OrsoDataset.save" title="Link to this definition"></a></dt>
+<dd><p>Save the <a class="reference internal" href="#orsopy.fileio.orso.OrsoDataset" title="orsopy.fileio.orso.OrsoDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrsoDataset</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fname</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TextIO</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – The file name to save to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.save_orso">
+<span class="sig-prename descclassname"><span class="pre">orsopy.fileio.orso.</span></span><span class="sig-name descname"><span class="pre">save_orso</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#save_orso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.save_orso" title="Link to this definition"></a></dt>
+<dd><p>Saves an ORSO file. Each of the datasets must have a unique
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">OrsoDataset.info.data_set</span></code> attribute. If that attribute is not
+set, it is given an integer value corresponding to it’s position
+in the list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datasets</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#orsopy.fileio.orso.OrsoDataset" title="orsopy.fileio.orso.OrsoDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrsoDataset</span></code></a>]</span>) – List of OrsoDataset to save into the Orso file.</p></li>
+<li><p><strong>fname</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TextIO</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – The file name to save to.</p></li>
+<li><p><strong>comment</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Comment to write at the top of Orso file.</p></li>
+<li><p><strong>data_separator</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Optional string of newline characters to separate multiple datasets.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the <code class="xref py py-attr docutils literal notranslate"><span class="pre">OrsoDataset.info.data_set</span></code>
+values are not unique.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.load_orso">
+<span class="sig-prename descclassname"><span class="pre">orsopy.fileio.orso.</span></span><span class="sig-name descname"><span class="pre">load_orso</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#load_orso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.load_orso" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fname</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TextIO</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – The Orso file to load.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#orsopy.fileio.orso.OrsoDataset" title="orsopy.fileio.orso.OrsoDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrsoDataset</span></code></a>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#orsopy.fileio.orso.OrsoDataset" title="orsopy.fileio.orso.OrsoDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrsoDataset</span></code></a> objects for each dataset contained
+within the ORT file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.load_nexus">
+<span class="sig-prename descclassname"><span class="pre">orsopy.fileio.orso.</span></span><span class="sig-name descname"><span class="pre">load_nexus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#load_nexus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.load_nexus" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#orsopy.fileio.orso.OrsoDataset" title="orsopy.fileio.orso.OrsoDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrsoDataset</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="orsopy.fileio.orso.save_nexus">
+<span class="sig-prename descclassname"><span class="pre">orsopy.fileio.orso.</span></span><span class="sig-name descname"><span class="pre">save_nexus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/orso.html#save_nexus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.orso.save_nexus" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryIO</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="orsopy.fileio.reduction.html" class="btn btn-neutral float-left" title="orsopy.fileio.reduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contributing.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

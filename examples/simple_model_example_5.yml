@@ -1,9 +1,0 @@
-sample:
-    model:
-        origin: guess based on preparation
-        stack: air | 10 ( Si 7 | Fe 7 ) | Si
-        materials:
-          Fe:
-            magnetic_moment: 2.5
-          Si:
-            relative_density: 0.9

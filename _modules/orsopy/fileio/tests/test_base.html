@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.fileio.tests.test_base &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">orsopy.fileio.tests.test_base</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for orsopy.fileio.tests.test_base</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tests for fileio.base module</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=R0201</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">datetime_module</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">sqrt</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">pint</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">from</span> <span class="nn">orsopy.fileio</span> <span class="kn">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">orso</span>
+
+<span class="n">pth</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
+
+
+<div class="viewcode-block" id="TestHeaderClass">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestHeaderClass">[docs]</a>
+<span class="k">class</span> <span class="nc">TestHeaderClass</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testing general class functionalities of ORSO Header.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestHeaderClass.test_resolve_any">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestHeaderClass.test_resolve_any">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_resolve_any</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nd">@dataclass</span>
+        <span class="k">class</span> <span class="nc">TestAny</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Header</span><span class="p">):</span>
+            <span class="n">test</span><span class="p">:</span> <span class="n">Any</span>
+
+        <span class="n">test_object</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">TestAny</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">test_object</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test</span> <span class="ow">is</span> <span class="n">test_object</span></div>
+
+
+<div class="viewcode-block" id="TestHeaderClass.test_resolve_datetime">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestHeaderClass.test_resolve_datetime">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_resolve_datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nd">@dataclass</span>
+        <span class="k">class</span> <span class="nc">TestDatetime</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Header</span><span class="p">):</span>
+            <span class="n">test</span><span class="p">:</span> <span class="n">datetime</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">TestDatetime</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="ow">is</span> <span class="n">datetime</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">TestDatetime</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="ow">is</span> <span class="n">datetime</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">TestDatetime</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="s2">&quot;no-ISO-string&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span>
+
+        <span class="c1"># check python 3.6 implementation where fromisoformat did not exist</span>
+        <span class="k">class</span> <span class="nc">MockDatetime</span><span class="p">:</span>
+            <span class="nd">@staticmethod</span>
+            <span class="k">def</span> <span class="nf">strptime</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">format</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">format</span><span class="p">)</span>
+
+        <span class="nd">@dataclass</span>
+        <span class="k">class</span> <span class="nc">TestDatetime</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Header</span><span class="p">):</span>
+            <span class="n">test</span><span class="p">:</span> <span class="n">MockDatetime</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">datetime_module</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">MockDatetime</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">TestDatetime</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">MockDatetime</span><span class="p">())</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="ow">is</span> <span class="n">MockDatetime</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">TestDatetime</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">))</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="ow">is</span> <span class="n">datetime</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">TestDatetime</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">))</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="ow">is</span> <span class="n">datetime</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">TestDatetime</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">))</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="ow">is</span> <span class="n">datetime</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">TestDatetime</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="s2">&quot;no-ISO-string&quot;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">datetime_module</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span></div>
+
+
+<div class="viewcode-block" id="TestHeaderClass.test_resolve_dictof">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestHeaderClass.test_resolve_dictof">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_resolve_dictof</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">):</span>
+            <span class="c1"># dict type annotation changed in 3.8</span>
+            <span class="k">return</span>
+
+        <span class="nd">@dataclass</span>
+        <span class="k">class</span> <span class="nc">TestDictof</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Header</span><span class="p">):</span>
+            <span class="n">test</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]</span>
+            <span class="n">test2</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">TestDictof</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ab&quot;</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span> <span class="s2">&quot;def&quot;</span><span class="p">:</span> <span class="n">now</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)},</span> <span class="n">test2</span><span class="o">=</span><span class="p">{</span><span class="mi">13</span><span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span> <span class="s2">&quot;23&quot;</span><span class="p">:</span> <span class="mi">23</span><span class="p">})</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;ab&quot;</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span> <span class="s2">&quot;def&quot;</span><span class="p">:</span> <span class="n">now</span><span class="p">}</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test2</span> <span class="o">==</span> <span class="p">{</span><span class="mf">13.0</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">23.0</span><span class="p">:</span> <span class="mi">23</span><span class="p">}</span>
+        <span class="k">assert</span> <span class="p">[(</span><span class="nb">type</span><span class="p">(</span><span class="n">ki</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">vi</span><span class="p">))</span> <span class="k">for</span> <span class="n">ki</span><span class="p">,</span> <span class="n">vi</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">test2</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span> <span class="o">==</span> <span class="p">[(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)]</span>
+
+        <span class="c1"># Dict should be used to define key/value types</span>
+        <span class="nd">@dataclass</span>
+        <span class="k">class</span> <span class="nc">TestDictNodef</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Header</span><span class="p">):</span>
+            <span class="n">test</span><span class="p">:</span> <span class="n">Dict</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">TestDictNodef</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ab&quot;</span><span class="p">:</span> <span class="s2">&quot;cd&quot;</span><span class="p">})</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;ab&quot;</span><span class="p">:</span> <span class="s2">&quot;cd&quot;</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="TestHeaderClass.test_resolve_list">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestHeaderClass.test_resolve_list">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_resolve_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nd">@dataclass</span>
+        <span class="k">class</span> <span class="nc">TestList</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Header</span><span class="p">):</span>
+            <span class="n">test</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">TestList</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">TestList</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">3.232</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">TestList</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">3.232</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">TestList</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="s2">&quot;134&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test</span> <span class="o">==</span> <span class="p">[</span><span class="mi">134</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TestHeaderClass.test_resolve_tuple">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestHeaderClass.test_resolve_tuple">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_resolve_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nd">@dataclass</span>
+        <span class="k">class</span> <span class="nc">TestTuple</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Header</span><span class="p">):</span>
+            <span class="n">test</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">TestTuple</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">TestTuple</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">3.232</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">TestTuple</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="s2">&quot;134&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test</span> <span class="o">==</span> <span class="p">(</span><span class="mi">134</span><span class="p">,)</span>
+        <span class="c1"># wrong number of elements will be shortened to type hint length</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">TestTuple</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">TestTuple</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestHeaderClass.test_subsubclass">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestHeaderClass.test_subsubclass">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_subsubclass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nd">@dataclass</span>
+        <span class="k">class</span> <span class="nc">Test1</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Header</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">NotImplementedError</span><span class="p">):</span>
+
+            <span class="nd">@dataclass</span>
+            <span class="k">class</span> <span class="nc">Test2</span><span class="p">(</span><span class="n">Test1</span><span class="p">):</span>
+                <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="TestHeaderClass.test_unexpected_error">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestHeaderClass.test_unexpected_error">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_unexpected_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test that any unforeseen exception in the resolve function gets</span>
+<span class="sd">        reported as ORSOResolveError.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nd">@dataclass</span>
+        <span class="k">class</span> <span class="nc">TestDatetime</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Header</span><span class="p">):</span>
+            <span class="n">test</span><span class="p">:</span> <span class="n">datetime</span>
+
+        <span class="k">def</span> <span class="nf">resolve_type</span><span class="p">(</span><span class="n">hint</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Test error&quot;</span><span class="p">)</span>
+
+        <span class="n">TestDatetime</span><span class="o">.</span><span class="n">_resolve_type</span> <span class="o">=</span> <span class="n">resolve_type</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOResolveError</span><span class="p">):</span>
+            <span class="n">TestDatetime</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="TestHeaderClass.test_empty_creation">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestHeaderClass.test_empty_creation">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_empty_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make a class that tests all cases of the empty method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nd">@dataclass</span>
+        <span class="k">class</span> <span class="nc">TestEmpty</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Header</span><span class="p">):</span>
+            <span class="n">test1</span><span class="p">:</span> <span class="nb">float</span>
+            <span class="n">test2</span><span class="p">:</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span>
+            <span class="n">test3</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">,</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="p">]</span>
+            <span class="n">test4</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">]</span>
+            <span class="n">test5</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+            <span class="n">test6</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">TestEmpty</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test1</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test2</span> <span class="o">==</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test3</span> <span class="o">==</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test4</span> <span class="o">==</span> <span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="o">.</span><span class="n">empty</span><span class="p">()]</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test5</span> <span class="o">==</span> <span class="p">[]</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">test6</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">asdict</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="n">res</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestHeaderClass.test_dict_conversion">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestHeaderClass.test_dict_conversion">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_dict_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">_todict</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">})</span>
+        <span class="k">assert</span> <span class="n">res</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">}</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">_todict</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">res</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+
+        <span class="k">class</span> <span class="nc">Test1</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">_ast</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">}</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">Test1</span><span class="p">())</span>
+        <span class="k">assert</span> <span class="n">res</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">}</span>
+
+        <span class="nd">@dataclass</span>
+        <span class="k">class</span> <span class="nc">Test2</span><span class="p">:</span>
+            <span class="n">test</span><span class="p">:</span> <span class="nb">int</span>
+            <span class="n">test2</span><span class="p">:</span> <span class="nb">float</span>
+            <span class="n">test3</span><span class="p">:</span> <span class="nb">str</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">Test2</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mf">12.4</span><span class="p">,</span> <span class="s2">&quot;1234&quot;</span><span class="p">),</span> <span class="n">classkey</span><span class="o">=</span><span class="s2">&quot;TestClassKey&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">res</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span> <span class="s2">&quot;test2&quot;</span><span class="p">:</span> <span class="mf">12.4</span><span class="p">,</span> <span class="s2">&quot;test3&quot;</span><span class="p">:</span> <span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;TestClassKey&quot;</span><span class="p">:</span> <span class="s2">&quot;Test2&quot;</span><span class="p">}</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestErrorValue">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorValue">[docs]</a>
+<span class="k">class</span> <span class="nc">TestErrorValue</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testing the Value class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestErrorValue.test_single_value">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorValue.test_single_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_single_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of an object with a magnitude and unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">error_value</span> <span class="o">==</span> <span class="mf">1.0</span></div>
+
+
+<div class="viewcode-block" id="TestErrorValue.test_optionals">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorValue.test_optionals">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_optionals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of an object with a magnitude and unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;uniform&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">error_value</span> <span class="o">==</span> <span class="mf">1.0</span>
+        <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">error_type</span> <span class="o">==</span> <span class="s2">&quot;resolution&quot;</span>
+        <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">value_is</span> <span class="o">==</span> <span class="s2">&quot;FWHM&quot;</span>
+        <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">distribution</span> <span class="o">==</span> <span class="s2">&quot;uniform&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestErrorValue.test_sigma">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorValue.test_sigma">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of an object with a magnitude and unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">sigma</span> <span class="o">==</span> <span class="mf">1.0</span>
+        <span class="k">for</span> <span class="n">dist</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;gaussian&quot;</span><span class="p">,</span> <span class="s2">&quot;triangular&quot;</span><span class="p">,</span> <span class="s2">&quot;uniform&quot;</span><span class="p">,</span> <span class="s2">&quot;lorentzian&quot;</span><span class="p">]:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">sigma</span> <span class="o">==</span> <span class="mf">1.0</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">sigma</span> <span class="o">==</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)))</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;triangular&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">sigma</span> <span class="o">==</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;uniform&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">sigma</span> <span class="o">==</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+
+        <span class="n">error</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;lorentzian&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">error</span><span class="o">.</span><span class="n">sigma</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;undefined&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">NotImplementedError</span><span class="p">):</span>
+            <span class="n">error</span><span class="o">.</span><span class="n">sigma</span></div>
+
+
+<div class="viewcode-block" id="TestErrorValue.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorValue.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="si">{error_value: 1.0}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestErrorValue.test_no_value_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorValue.test_no_value_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_no_value_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml with a non-optional ORSO item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{error_value: null}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestErrorValue.test_optionals_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorValue.test_optionals_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_optionals_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="si">{error_value: 1.0}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestErrorValue.test_user_data">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorValue.test_user_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_user_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorValue</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">error_value</span><span class="o">=</span><span class="mf">13.4</span><span class="p">,</span> <span class="n">my_attr</span><span class="o">=</span><span class="s2">&quot;hallo ORSO&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">error</span><span class="o">.</span><span class="n">user_data</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;my_attr&quot;</span><span class="p">:</span> <span class="s2">&quot;hallo ORSO&quot;</span><span class="p">}</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestValue">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValue">[docs]</a>
+<span class="k">class</span> <span class="nc">TestValue</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testing the Value class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestValue.test_single_value">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValue.test_single_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_single_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of an object with a magnitude and unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mf">1.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;m&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestValue.test_list_warning">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValue.test_list_warning">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_list_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of an object with a a list of values and a unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestValue.test_bad_unit">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValue.test_bad_unit">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_bad_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rejection of non-ASCII units.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;Å&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestValue.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValue.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{magnitude: 1.0, unit: m}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestValue.test_no_magnitude_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValue.test_no_magnitude_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_no_magnitude_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml with a non-optional ORSO item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{magnitude: null}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestValue.test_user_data">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValue.test_user_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_user_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">magnitude</span><span class="o">=</span><span class="mf">13.4</span><span class="p">,</span> <span class="n">my_attr</span><span class="o">=</span><span class="s2">&quot;hallo ORSO&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">user_data</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;my_attr&quot;</span><span class="p">:</span> <span class="s2">&quot;hallo ORSO&quot;</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="TestValue.test_unit_conversion">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValue.test_unit_conversion">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_unit_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">unit_registry</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;mm&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mf">1.0e-3</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;1/nm^3&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;1/angstrom^3&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mf">1.0e-3</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">pint</span><span class="o">.</span><span class="n">DimensionalityError</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;1/nm^3&quot;</span><span class="p">)</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestComplexValue">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestComplexValue">[docs]</a>
+<span class="k">class</span> <span class="nc">TestComplexValue</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testing the Value class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestComplexValue.test_single_value">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestComplexValue.test_single_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_single_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of an object with a magnitude and unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ComplexValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">real</span> <span class="o">==</span> <span class="mf">1.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">imag</span> <span class="o">==</span> <span class="mf">2.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;m&quot;</span>
+        <span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>  <span class="c1"># just test that the custom repr method does not through an exception</span></div>
+
+
+<div class="viewcode-block" id="TestComplexValue.test_list_warning">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestComplexValue.test_list_warning">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_list_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of an object with a list of values and a unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">ComplexValue</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestComplexValue.test_bad_unit">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestComplexValue.test_bad_unit">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_bad_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rejection of non-ASCII units.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ComplexValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;Å&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestComplexValue.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestComplexValue.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ComplexValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{real: 1.0, imag: 2.0, unit: m}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestComplexValue.test_no_magnitude_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestComplexValue.test_no_magnitude_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_no_magnitude_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml with a non-optional ORSO item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ComplexValue</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{real: null}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestComplexValue.test_unit_conversion">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestComplexValue.test_unit_conversion">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_unit_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">unit_registry</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ComplexValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;mm&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mf">1.0e-3</span> <span class="o">+</span> <span class="mf">2.0e-3</span><span class="n">j</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ComplexValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;1/nm^3&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;1/angstrom^3&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mf">1.0e-3</span> <span class="o">+</span> <span class="mf">2.0e-3</span><span class="n">j</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ComplexValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;mm&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mf">1.0e-3</span> <span class="o">+</span> <span class="mf">0.0</span><span class="n">j</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">pint</span><span class="o">.</span><span class="n">DimensionalityError</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ComplexValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;1/nm^3&quot;</span><span class="p">)</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestValueVector">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueVector">[docs]</a>
+<span class="k">class</span> <span class="nc">TestValueVector</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testing the ValueVector class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestValueVector.test_single_value">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueVector.test_single_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_single_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of an object with three dimensions and unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueVector</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">x</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">y</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">z</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;m&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestValueVector.test_list_warns">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueVector.test_list_warns">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_list_warns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of an object with three dimensions of lists and unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">ValueVector</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestValueVector.test_bad_unit">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueVector.test_bad_unit">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_bad_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rejection of non-ASCII unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueVector</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;Å&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestValueVector.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueVector.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueVector</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{x: 1.0, y: 2.0, z: 3.0, unit: m}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestValueVector.test_two_dimensional_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueVector.test_two_dimensional_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_two_dimensional_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml with only two dimensions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueVector</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{x: 1.0, y: 2.0, z: null, unit: m}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestValueVector.test_unit_conversion">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueVector.test_unit_conversion">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_unit_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">unit_registry</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueVector</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s2">&quot;mm&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;mm&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mf">1.0e-3</span><span class="p">,</span> <span class="mf">2.0e-3</span><span class="p">,</span> <span class="mf">3.0e-3</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueVector</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s2">&quot;1/nm^3&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;1/angstrom^3&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mf">1.0e-3</span><span class="p">,</span> <span class="mf">2.0e-3</span><span class="p">,</span> <span class="mf">3.0e-3</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">pint</span><span class="o">.</span><span class="n">DimensionalityError</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueVector</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s2">&quot;1/m&quot;</span><span class="p">)</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestValueRange">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueRange">[docs]</a>
+<span class="k">class</span> <span class="nc">TestValueRange</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testing the ValueRange class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestValueRange.test_single_value">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueRange.test_single_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_single_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of an object with a max, min and unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">min</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">max</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;m&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestValueRange.test_list_warns">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueRange.test_list_warns">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_list_warns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of an object of a list of max and list of min and a unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestValueRange.test_bad_unit">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueRange.test_bad_unit">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_bad_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rejection of non-ASCII unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;Å&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestValueRange.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueRange.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{min: 1.0, max: 2.0, unit: m}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestValueRange.test_no_upper_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueRange.test_no_upper_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_no_upper_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml with no max.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{min: 1.0, max: null}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestValueRange.test_no_lower_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueRange.test_no_lower_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_no_lower_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml with no min.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{min: null, max: 1.0}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestValueRange.test_unit_conversion">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestValueRange.test_unit_conversion">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_unit_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">unit_registry</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;mm&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;mm&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mf">1.0e-3</span><span class="p">,</span> <span class="mf">2.0e-3</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;1/nm^3&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;1/angstrom^3&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mf">1.0e-3</span><span class="p">,</span> <span class="mf">2.0e-3</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">pint</span><span class="o">.</span><span class="n">DimensionalityError</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;1/m&quot;</span><span class="p">)</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">as_unit</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestPerson">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestPerson">[docs]</a>
+<span class="k">class</span> <span class="nc">TestPerson</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testing the Person class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestPerson.test_creation">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestPerson.test_creation">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation with no email.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;Joe A. User&quot;</span><span class="p">,</span> <span class="s2">&quot;Ivy League University&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Joe A. User&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">affiliation</span> <span class="o">==</span> <span class="s2">&quot;Ivy League University&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestPerson.test_creation_with_contact">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestPerson.test_creation_with_contact">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation_with_contact</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation with an email.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;Joe A. User&quot;</span><span class="p">,</span> <span class="s2">&quot;Ivy League University&quot;</span><span class="p">,</span> <span class="s2">&quot;jauser@ivy.edu&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Joe A. User&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">affiliation</span> <span class="o">==</span> <span class="s2">&quot;Ivy League University&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">contact</span> <span class="o">==</span> <span class="s2">&quot;jauser@ivy.edu&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestPerson.test_creation_with_multiline">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestPerson.test_creation_with_multiline">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation_with_multiline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;Joe A. User&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;Ivy League University&quot;</span><span class="p">,</span> <span class="s2">&quot;Great Neutron Factory&quot;</span><span class="p">]))</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Joe A. User&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">affiliation</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;Ivy League University&quot;</span><span class="p">,</span> <span class="s2">&quot;Great Neutron Factory&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="TestPerson.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestPerson.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml with no email.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;Joe A. User&quot;</span><span class="p">,</span> <span class="s2">&quot;Ivy League University&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;name: Joe A. User</span><span class="se">\n</span><span class="s2">affiliation: Ivy League University</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestPerson.test_no_affiliation_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestPerson.test_no_affiliation_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_no_affiliation_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml without affiliation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;Joe A. User&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;name: Joe A. User</span><span class="se">\n</span><span class="s2">affiliation: null</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestPerson.test_no_name_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestPerson.test_no_name_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_no_name_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml without name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;A University&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;name: null</span><span class="se">\n</span><span class="s2">affiliation: A University</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestPerson.test_email_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestPerson.test_email_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_email_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml with an email.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;Joe A. User&quot;</span><span class="p">,</span> <span class="s2">&quot;Ivy League University&quot;</span><span class="p">,</span> <span class="s2">&quot;jauser@ivy.edu&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;name: Joe A. User</span><span class="se">\n</span><span class="s2">affiliation: Ivy League University&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">contact: jauser@ivy.edu</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestColumn">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestColumn">[docs]</a>
+<span class="k">class</span> <span class="nc">TestColumn</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testing the Column class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestColumn.test_creation">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestColumn.test_creation">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of a column.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;1/angstrom&quot;</span><span class="p">,</span> <span class="s2">&quot;qz vector&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">physical_quantity</span> <span class="o">==</span> <span class="s2">&quot;qz vector&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;q&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;1/angstrom&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestColumn.test_bad_unit">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestColumn.test_bad_unit">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_bad_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rejection of non-ASCII unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;Å&quot;</span><span class="p">,</span> <span class="s2">&quot;qz vector&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestColumn.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestColumn.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;1/angstrom&quot;</span><span class="p">,</span> <span class="s2">&quot;qz vector&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{name: q, unit: 1/angstrom, physical_quantity: qz vector}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestColumn.test_no_description_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestColumn.test_no_description_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_no_description_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;1/angstrom&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{name: q, unit: 1/angstrom}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestErrorColumn">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorColumn">[docs]</a>
+<span class="k">class</span> <span class="nc">TestErrorColumn</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testing the Column class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestErrorColumn.test_creation">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorColumn.test_creation">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of a column.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;uncertainty&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;triangular&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">error_of</span> <span class="o">==</span> <span class="s2">&quot;q&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">error_type</span> <span class="o">==</span> <span class="s2">&quot;uncertainty&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">distribution</span> <span class="o">==</span> <span class="s2">&quot;triangular&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">value_is</span> <span class="o">==</span> <span class="s2">&quot;FWHM&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">error_of</span> <span class="o">==</span> <span class="s2">&quot;q&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">error_type</span> <span class="o">==</span> <span class="s2">&quot;resolution&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">distribution</span> <span class="o">==</span> <span class="s2">&quot;gaussian&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">value_is</span> <span class="o">==</span> <span class="s2">&quot;sigma&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;sq&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestErrorColumn.test_bad_type">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorColumn.test_bad_type">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_bad_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rejection of non-ASCII unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;nm&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestErrorColumn.test_bad_distribution">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorColumn.test_bad_distribution">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_bad_distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rejection of non-ASCII unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;uncertainty&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;undefined&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;uncertainty&quot;</span><span class="p">,</span> <span class="s2">&quot;HWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;triangular&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;uncertainty&quot;</span><span class="p">,</span> <span class="s2">&quot;wrong&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestErrorColumn.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorColumn.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;uncertainty&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;triangular&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{error_of: q, error_type: uncertainty, value_is: FWHM, distribution: triangular}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestErrorColumn.test_minimal_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorColumn.test_minimal_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_minimal_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{error_of: q}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestErrorColumn.test_sigma_conversion">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestErrorColumn.test_sigma_conversion">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_sigma_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="s2">&quot;noop&quot;</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;uncertainty&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">to_sigma</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="s2">&quot;gauss&quot;</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;uncertainty&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">to_sigma</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="mf">2.0</span><span class="p">))))</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="s2">&quot;uniform&quot;</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;uncertainty&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;uniform&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">to_sigma</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">12.0</span><span class="p">))</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="s2">&quot;triangular&quot;</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;uncertainty&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;triangular&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">to_sigma</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">6.0</span><span class="p">))</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="s2">&quot;lorentizan&quot;</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;uncertainty&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;lorentzian&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">to_sigma</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="s2">&quot;unknown&quot;</span><span class="p">):</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">ORSOSchemaWarning</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">ErrorColumn</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;uncertainty&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">,</span> <span class="s2">&quot;unknown&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">NotImplementedError</span><span class="p">):</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">to_sigma</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestFile">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestFile">[docs]</a>
+<span class="k">class</span> <span class="nc">TestFile</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testing the File class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestFile.test_creation_for_nonexistent_file">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestFile.test_creation_for_nonexistent_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation_for_nonexistent_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of a file that does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s2">&quot;not_a_file.txt&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">file</span> <span class="o">==</span> <span class="s2">&quot;not_a_file.txt&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">==</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestFile.test_to_yaml_for_nonexistent_file">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestFile.test_to_yaml_for_nonexistent_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml_for_nonexistent_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml of a file that does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s2">&quot;not_a_file.txt&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;file: not_a_file.txt</span><span class="se">\n</span><span class="s2">timestamp: &quot;</span> <span class="o">+</span> <span class="s2">&quot;2021-07-12T14:04:20</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestFile.test_creation_for_existing_file">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestFile.test_creation_for_existing_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation_for_existing_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation for a file that does exist with a given modified date.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pth</span> <span class="o">/</span> <span class="s2">&quot;not_orso.ort&quot;</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">file</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">==</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestFile.test_to_yaml_for_existing_file">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestFile.test_to_yaml_for_existing_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml_for_existing_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml a file that does exist with a given modified</span>
+<span class="sd">        date.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pth</span> <span class="o">/</span> <span class="s2">&quot;not_orso.ort&quot;</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span>
+            <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;file: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;timestamp: &quot;</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestFile.test_creation_for_existing_file_no_mod_time">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestFile.test_creation_for_existing_file_no_mod_time">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation_for_existing_file_no_mod_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml a file that does exist without a given</span>
+<span class="sd">        modified date.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pth</span> <span class="o">/</span> <span class="s2">&quot;not_orso.ort&quot;</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">file</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">==</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestFile.test_to_yaml_for_existing_file_no_mod_time">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestFile.test_to_yaml_for_existing_file_no_mod_time">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml_for_existing_file_no_mod_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml a file that does exist without a given</span>
+<span class="sd">        modified date.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pth</span> <span class="o">/</span> <span class="s2">&quot;not_orso.ort&quot;</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span>
+            <span class="o">==</span> <span class="s2">&quot;file: &quot;</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;timestamp: &quot;</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestFile.test_not_orso">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_base.html#orsopy.fileio.tests.test_base.TestFile.test_not_orso">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_not_orso</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">NotOrsoCompatibleFileError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;First line does not appear&quot;</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pth</span> <span class="o">/</span> <span class="s2">&quot;not_orso.ort&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">orso</span><span class="o">.</span><span class="n">load_orso</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

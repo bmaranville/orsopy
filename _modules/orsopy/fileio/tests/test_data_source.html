@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.fileio.tests.test_data_source &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">orsopy.fileio.tests.test_data_source</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for orsopy.fileio.tests.test_data_source</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tests for fileio.data_source module</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">orsopy.fileio</span> <span class="kn">import</span> <span class="n">Polarization</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">data_source</span>
+
+<span class="n">pth</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
+
+
+<div class="viewcode-block" id="TestExperiment">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestExperiment">[docs]</a>
+<span class="k">class</span> <span class="nc">TestExperiment</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testing the Experiment class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestExperiment.test_creation">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestExperiment.test_creation">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation with minimal set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span><span class="s2">&quot;My First Experiment&quot;</span><span class="p">,</span> <span class="s2">&quot;A Lab Instrument&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">1992</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span> <span class="s2">&quot;x-ray&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">title</span> <span class="o">==</span> <span class="s2">&quot;My First Experiment&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">instrument</span> <span class="o">==</span> <span class="s2">&quot;A Lab Instrument&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">start_date</span> <span class="o">==</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">1992</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">14</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">probe</span> <span class="o">==</span> <span class="s2">&quot;x-ray&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">facility</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">proposalID</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">doi</span> <span class="ow">is</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="TestExperiment.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestExperiment.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml with minimal set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span><span class="s2">&quot;My First Experiment&quot;</span><span class="p">,</span> <span class="s2">&quot;A Lab Instrument&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">1992</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span> <span class="s2">&quot;x-ray&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span>
+            <span class="o">==</span> <span class="s2">&quot;title: My First Experiment</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;instrument: A Lab Instrument</span><span class="se">\n</span><span class="s2">start_date: 1992-07-14T00:00:00&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">probe: x-ray</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestExperiment.test_creation_optionals">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestExperiment.test_creation_optionals">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation_optionals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation with optionals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
+            <span class="s2">&quot;My First Neutron Experiment&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TAS8&quot;</span><span class="p">,</span>
+            <span class="n">datetime</span><span class="p">(</span><span class="mi">1992</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span>
+            <span class="s2">&quot;neutron&quot;</span><span class="p">,</span>
+            <span class="n">facility</span><span class="o">=</span><span class="s2">&quot;Risoe&quot;</span><span class="p">,</span>
+            <span class="n">proposalID</span><span class="o">=</span><span class="s2">&quot;abc123&quot;</span><span class="p">,</span>
+            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;10.0000/abc1234&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">title</span> <span class="o">==</span> <span class="s2">&quot;My First Neutron Experiment&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">instrument</span> <span class="o">==</span> <span class="s2">&quot;TAS8&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">start_date</span> <span class="o">==</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">1992</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">14</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">probe</span> <span class="o">==</span> <span class="s2">&quot;neutron&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">facility</span> <span class="o">==</span> <span class="s2">&quot;Risoe&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">proposalID</span> <span class="o">==</span> <span class="s2">&quot;abc123&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">doi</span> <span class="o">==</span> <span class="s2">&quot;10.0000/abc1234&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestExperiment.test_to_yaml_optionals">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestExperiment.test_to_yaml_optionals">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml_optionals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml with optionals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
+            <span class="s2">&quot;My First Neutron Experiment&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TAS8&quot;</span><span class="p">,</span>
+            <span class="n">datetime</span><span class="p">(</span><span class="mi">1992</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span>
+            <span class="s2">&quot;neutron&quot;</span><span class="p">,</span>
+            <span class="n">facility</span><span class="o">=</span><span class="s2">&quot;Risoe&quot;</span><span class="p">,</span>
+            <span class="n">proposalID</span><span class="o">=</span><span class="s2">&quot;abc123&quot;</span><span class="p">,</span>
+            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;10.0000/abc1234&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span>
+            <span class="s2">&quot;title: My First Neutron Experiment</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;instrument: TAS8</span><span class="se">\n</span><span class="s2">start_date: 1992-07-14T00:00:00&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">probe: neutron</span><span class="se">\n</span><span class="s2">facility: Risoe</span><span class="se">\n</span><span class="s2">proposalID: &quot;</span>
+            <span class="s2">&quot;abc123</span><span class="se">\n</span><span class="s2">doi: 10.0000/abc1234</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestSample">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestSample">[docs]</a>
+<span class="k">class</span> <span class="nc">TestSample</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Testing for the Sample class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestSample.test_creation">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestSample.test_creation">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation with a minimal set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Sample</span><span class="p">(</span><span class="s2">&quot;A Perfect Sample&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;A Perfect Sample&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">category</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">composition</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">description</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">environment</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">sample_parameters</span> <span class="ow">is</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="TestSample.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestSample.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml with a minimal set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Sample</span><span class="p">(</span><span class="s2">&quot;A Perfect Sample&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;name: A Perfect Sample</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestSample.test_creation_optionals">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestSample.test_creation_optionals">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation_optionals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation with a optionals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Sample</span><span class="p">(</span>
+            <span class="s2">&quot;A Perfect Sample&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="s2">&quot;solid/gas&quot;</span><span class="p">,</span>
+            <span class="n">composition</span><span class="o">=</span><span class="s2">&quot;Si | SiO2(20 A) | Fe(200 A) | air(beam side)&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The sample is without flaws&quot;</span><span class="p">,</span>
+            <span class="n">environment</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Temperature cell&quot;</span><span class="p">],</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">base</span><span class="o">.</span><span class="n">ValueVector</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s2">&quot;mm&quot;</span><span class="p">),</span>
+            <span class="n">sample_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">13.4</span><span class="p">)},</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;A Perfect Sample&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">category</span> <span class="o">==</span> <span class="s2">&quot;solid/gas&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">composition</span> <span class="o">==</span> <span class="s2">&quot;Si | SiO2(20 A) | &quot;</span> <span class="o">+</span> <span class="s2">&quot;Fe(200 A) | air(beam side)&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="s2">&quot;The sample is without flaws&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueVector</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s2">&quot;mm&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">environment</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;Temperature cell&quot;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">sample_parameters</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">13.4</span><span class="p">)}</span></div>
+
+
+<div class="viewcode-block" id="TestSample.test_to_yaml_optionals">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestSample.test_to_yaml_optionals">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml_optionals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml with optionals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Sample</span><span class="p">(</span>
+            <span class="s2">&quot;A Perfect Sample&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="s2">&quot;solid/gas&quot;</span><span class="p">,</span>
+            <span class="n">composition</span><span class="o">=</span><span class="s2">&quot;Si | SiO2(20 A) | Fe(200 A) | air(beam side)&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The sample is without flaws&quot;</span><span class="p">,</span>
+            <span class="n">environment</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Temperature cell&quot;</span><span class="p">],</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">base</span><span class="o">.</span><span class="n">ValueVector</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s2">&quot;mm&quot;</span><span class="p">),</span>
+            <span class="n">sample_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">13.4</span><span class="p">)},</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span>
+            <span class="o">==</span> <span class="s2">&quot;name: A Perfect Sample</span><span class="se">\n</span><span class="s2">category: &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;solid/gas</span><span class="se">\n</span><span class="s2">composition: Si | SiO2(20 A) | Fe(200 A) | air&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;(beam side)</span><span class="se">\n</span><span class="s2">description: The sample is without flaws</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;size: {x: 1.0, y: 2.0, z: 3.0, unit: mm}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;environment:</span><span class="se">\n</span><span class="s2">- Temperature cell</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;sample_parameters:</span><span class="se">\n</span><span class="s2">  a: </span><span class="si">{magnitude: 13.4}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestDataSource">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestDataSource">[docs]</a>
+<span class="k">class</span> <span class="nc">TestDataSource</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tests for the DataSource class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestDataSource.test_creation">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestDataSource.test_creation">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation with only default.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inst</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">InstrumentSettings</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;deg&quot;</span><span class="p">),</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;angstrom&quot;</span><span class="p">))</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s2">&quot;1.nx.hdf&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()),</span> <span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s2">&quot;2.nx.hdf&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())]</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Measurement</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">&quot;angle-dispersive&quot;</span><span class="p">)</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">DataSource</span><span class="p">(</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;A Person&quot;</span><span class="p">,</span> <span class="s2">&quot;Some Uni&quot;</span><span class="p">),</span>
+            <span class="n">data_source</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span><span class="s2">&quot;My First Experiment&quot;</span><span class="p">,</span> <span class="s2">&quot;A Lab Instrument&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">1992</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span> <span class="s2">&quot;x-ray&quot;</span><span class="p">),</span>
+            <span class="n">data_source</span><span class="o">.</span><span class="n">Sample</span><span class="p">(</span><span class="s2">&quot;A Perfect Sample&quot;</span><span class="p">),</span>
+            <span class="n">m</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;A Person&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">affiliation</span> <span class="o">==</span> <span class="s2">&quot;Some Uni&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">title</span> <span class="o">==</span> <span class="s2">&quot;My First Experiment&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">instrument</span> <span class="o">==</span> <span class="s2">&quot;A Lab Instrument&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">start_date</span> <span class="o">==</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">1992</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">14</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">probe</span> <span class="o">==</span> <span class="s2">&quot;x-ray&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;A Perfect Sample&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestInstrumentSettings">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestInstrumentSettings">[docs]</a>
+<span class="k">class</span> <span class="nc">TestInstrumentSettings</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tests for the InstrumentSettings class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestInstrumentSettings.test_creation">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestInstrumentSettings.test_creation">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation with minimal settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">InstrumentSettings</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="s2">&quot;deg&quot;</span><span class="p">),</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s2">&quot;angstrom&quot;</span><span class="p">),)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">incident_angle</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mf">4.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">incident_angle</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;deg&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">min</span> <span class="o">==</span> <span class="mf">2.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">max</span> <span class="o">==</span> <span class="mf">12.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;angstrom&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">polarization</span> <span class="ow">is</span> <span class="n">Polarization</span><span class="o">.</span><span class="n">unpolarized</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">configuration</span> <span class="ow">is</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="TestInstrumentSettings.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestInstrumentSettings.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml with minimal set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">InstrumentSettings</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="s2">&quot;deg&quot;</span><span class="p">),</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s2">&quot;angstrom&quot;</span><span class="p">),)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span>
+            <span class="s2">&quot;incident_angle: {magnitude: 4.0, unit: deg}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;wavelength: {min: 2.0, max: 12.0, unit: angstrom}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;polarization: unpolarized</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestInstrumentSettings.test_creation_config_and_polarization">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestInstrumentSettings.test_creation_config_and_polarization">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation_config_and_polarization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation with optional items.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">InstrumentSettings</span><span class="p">(</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="s2">&quot;deg&quot;</span><span class="p">),</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s2">&quot;angstrom&quot;</span><span class="p">),</span>
+            <span class="n">polarization</span><span class="o">=</span><span class="s2">&quot;po&quot;</span><span class="p">,</span>
+            <span class="n">configuration</span><span class="o">=</span><span class="s2">&quot;liquid surface&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">incident_angle</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mf">4.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">incident_angle</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;deg&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">min</span> <span class="o">==</span> <span class="mf">2.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">max</span> <span class="o">==</span> <span class="mf">12.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;angstrom&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">polarization</span> <span class="o">==</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Polarization</span><span class="o">.</span><span class="n">po</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">configuration</span> <span class="o">==</span> <span class="s2">&quot;liquid surface&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestInstrumentSettings.test_to_yaml_config_and_polarization">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestInstrumentSettings.test_to_yaml_config_and_polarization">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml_config_and_polarization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transformation to yaml with optional items.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">InstrumentSettings</span><span class="p">(</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="s2">&quot;deg&quot;</span><span class="p">),</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s2">&quot;angstrom&quot;</span><span class="p">),</span>
+            <span class="n">polarization</span><span class="o">=</span><span class="s2">&quot;po&quot;</span><span class="p">,</span>
+            <span class="n">configuration</span><span class="o">=</span><span class="s2">&quot;liquid surface&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span>
+            <span class="o">==</span> <span class="s2">&quot;incident_angle: {magnitude: 4.0, unit: deg}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;wavelength: {min: 2.0, max: 12.0, unit: angstrom}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;polarization: po</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;configuration: liquid surface</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestInstrumentSettings.test_wrong_polarization">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestInstrumentSettings.test_wrong_polarization">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_wrong_polarization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertWarns</span><span class="p">(</span><span class="ne">RuntimeWarning</span><span class="p">):</span>
+            <span class="n">data_source</span><span class="o">.</span><span class="n">InstrumentSettings</span><span class="p">(</span>
+                <span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="s2">&quot;deg&quot;</span><span class="p">),</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s2">&quot;angstrom&quot;</span><span class="p">),</span> <span class="n">polarization</span><span class="o">=</span><span class="s2">&quot;p&quot;</span><span class="p">,</span>
+            <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestMeasurement">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestMeasurement">[docs]</a>
+<span class="k">class</span> <span class="nc">TestMeasurement</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tests for the Measurement class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestMeasurement.test_creation">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestMeasurement.test_creation">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation with minimal set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">pth</span> <span class="o">/</span> <span class="s2">&quot;not_orso.ort&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Measurement</span><span class="p">(</span>
+            <span class="n">data_source</span><span class="o">.</span><span class="n">InstrumentSettings</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="s2">&quot;deg&quot;</span><span class="p">),</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s2">&quot;angstrom&quot;</span><span class="p">),),</span>
+            <span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="kc">None</span><span class="p">)],</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">instrument_settings</span><span class="o">.</span><span class="n">incident_angle</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mf">4.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">instrument_settings</span><span class="o">.</span><span class="n">incident_angle</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;deg&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">instrument_settings</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">min</span> <span class="o">==</span> <span class="mf">2.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">instrument_settings</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">max</span> <span class="o">==</span> <span class="mf">12.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">instrument_settings</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;angstrom&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">data_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">file</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">pth</span> <span class="o">/</span> <span class="s2">&quot;not_orso.ort&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">data_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">==</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMeasurement.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestMeasurement.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml with minimal set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">pth</span> <span class="o">/</span> <span class="s2">&quot;not_orso.ort&quot;</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Measurement</span><span class="p">(</span>
+            <span class="n">data_source</span><span class="o">.</span><span class="n">InstrumentSettings</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="s2">&quot;deg&quot;</span><span class="p">),</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s2">&quot;angstrom&quot;</span><span class="p">),),</span>
+            <span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="kc">None</span><span class="p">)],</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span>
+            <span class="s2">&quot;instrument_settings:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;  incident_angle: {magnitude: 4.0, unit: deg}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;  wavelength: {min: 2.0, max: 12.0, unit: angstrom}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;  polarization: unpolarized</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;data_files:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;- file: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  timestamp: </span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMeasurement.test_creation_optionals">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestMeasurement.test_creation_optionals">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation_optionals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation with optionals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fname0</span> <span class="o">=</span> <span class="n">pth</span> <span class="o">/</span> <span class="s2">&quot;not_orso.ort&quot;</span>
+        <span class="n">fname1</span> <span class="o">=</span> <span class="n">pth</span> <span class="o">/</span> <span class="s2">&quot;test_base.py&quot;</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Measurement</span><span class="p">(</span>
+            <span class="n">data_source</span><span class="o">.</span><span class="n">InstrumentSettings</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="s2">&quot;deg&quot;</span><span class="p">),</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s2">&quot;angstrom&quot;</span><span class="p">),),</span>
+            <span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname0</span><span class="p">),</span> <span class="kc">None</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname1</span><span class="p">),</span> <span class="kc">None</span><span class="p">)],</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">instrument_settings</span><span class="o">.</span><span class="n">incident_angle</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mf">4.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">instrument_settings</span><span class="o">.</span><span class="n">incident_angle</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;deg&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">instrument_settings</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">min</span> <span class="o">==</span> <span class="mf">2.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">instrument_settings</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">max</span> <span class="o">==</span> <span class="mf">12.0</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">instrument_settings</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;angstrom&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">data_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">file</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">fname0</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">data_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">==</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">fname0</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">additional_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">file</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">fname1</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">additional_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">==</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">fname1</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMeasurement.test_to_yaml_optionals">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_data_source.html#orsopy.fileio.tests.test_data_source.TestMeasurement.test_to_yaml_optionals">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml_optionals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml with optionals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fname0</span> <span class="o">=</span> <span class="n">pth</span> <span class="o">/</span> <span class="s2">&quot;not_orso.ort&quot;</span>
+        <span class="n">fname1</span> <span class="o">=</span> <span class="n">pth</span> <span class="o">/</span> <span class="s2">&quot;test_base.py&quot;</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">Measurement</span><span class="p">(</span>
+            <span class="n">data_source</span><span class="o">.</span><span class="n">InstrumentSettings</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="s2">&quot;deg&quot;</span><span class="p">),</span> <span class="n">base</span><span class="o">.</span><span class="n">ValueRange</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s2">&quot;angstrom&quot;</span><span class="p">),),</span>
+            <span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname0</span><span class="p">),</span> <span class="kc">None</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname1</span><span class="p">),</span> <span class="kc">None</span><span class="p">)],</span>
+            <span class="s2">&quot;energy-dispersive&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">cmpstr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;instrument_settings:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;  incident_angle: {magnitude: 4.0, unit: deg}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;  wavelength: {min: 2.0, max: 12.0, unit: angstrom}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;  polarization: unpolarized</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;data_files:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;- file: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">fname0</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  timestamp: </span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">fname0</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;additional_files:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;- file: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">fname1</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  timestamp: </span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">fname1</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;scheme: energy-dispersive</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">cmpstr</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

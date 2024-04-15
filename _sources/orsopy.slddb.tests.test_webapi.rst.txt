@@ -1,0 +1,7 @@
+orsopy.slddb.tests.test\_webapi module
+======================================
+
+.. automodule:: orsopy.slddb.tests.test_webapi
+   :members:
+   :undoc-members:
+   :show-inheritance:

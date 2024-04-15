@@ -1,0 +1,20 @@
+orsopy package
+==============
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   orsopy.fileio
+   orsopy.slddb
+   orsopy.utils
+
+Module contents
+---------------
+
+.. automodule:: orsopy
+   :members:
+   :undoc-members:
+   :show-inheritance:

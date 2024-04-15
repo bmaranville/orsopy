@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.slddb.converters &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">orsopy.slddb.converters</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for orsopy.slddb.converters</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Classes for conversion of specific data into sqlite types and back.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">frombuffer</span>
+
+<span class="kn">from</span> <span class="nn">.comparators</span> <span class="kn">import</span> <span class="n">FormulaComparator</span><span class="p">,</span> <span class="n">FuzzyFloat</span><span class="p">,</span> <span class="n">GenericComparator</span>
+<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">Formula</span>
+
+<span class="n">SQLITE_TYPES</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span>
+<span class="n">SQLITE_STR</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">:</span> <span class="s2">&quot;INT&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">:</span> <span class="s2">&quot;REAL&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">:</span> <span class="s2">&quot;TEXT&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">:</span> <span class="s2">&quot;BLOB&quot;</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="Converter">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.Converter">[docs]</a>
+<span class="k">class</span> <span class="nc">Converter</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all other converters, can&#39;t be used stand alone.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sql_type</span> <span class="o">=</span> <span class="s2">&quot;TEXT&quot;</span>  <span class="c1"># if subclass does not define the SQLite type assume TEXT for compatibility</span>
+    <span class="n">html_list</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># only used for types that require to query a list in html requests</span>
+    <span class="n">comparator</span> <span class="o">=</span> <span class="n">GenericComparator</span>
+    <span class="n">html_title</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Converters is an abstract class&quot;</span>
+
+<div class="viewcode-block" id="Converter.validate">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.Converter.validate">[docs]</a>
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># Default behavior is to just try to convert.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="Converter.convert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.Converter.convert">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts data to SQLite format&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Converter.revert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.Converter.revert">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_data</span><span class="p">):</span>
+        <span class="c1"># Default behavior is to return the database data directly</span>
+        <span class="k">return</span> <span class="n">db_data</span></div>
+
+
+<div class="viewcode-block" id="Converter.revert_serializable">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.Converter.revert_serializable">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert_serializable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_data</span><span class="p">):</span>
+        <span class="c1"># generate json serialisable value, default is the normal value</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">revert</span><span class="p">(</span><span class="n">db_data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Converter.html_input">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.Converter.html_input">[docs]</a>
+    <span class="k">def</span> <span class="nf">html_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># return a string containing the input key for html entry template</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_title</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;&lt;input type=&quot;text&quot; name=&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; id=&quot;compound </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; value=&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot; &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;title = &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">html_title</span><span class="si">}</span><span class="s1">&quot;&gt;&#39;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&lt;input type=&quot;text&quot; name=&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; id=&quot;compound </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; value=&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot;&gt;&#39;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CType">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CType">[docs]</a>
+<span class="k">class</span> <span class="nc">CType</span><span class="p">(</span><span class="n">Converter</span><span class="p">):</span>
+
+    <span class="c1"># converts between a python type and SQLite type</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromtype</span><span class="p">,</span> <span class="n">dbtype</span><span class="p">,</span> <span class="n">db_repstr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fromtype</span> <span class="o">=</span> <span class="n">fromtype</span>
+        <span class="k">if</span> <span class="n">dbtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SQLITE_TYPES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Type </span><span class="si">%s</span><span class="s2"> is not a valid SQLite type&quot;</span> <span class="o">%</span> <span class="n">dbtype</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fromtype</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comparator</span> <span class="o">=</span> <span class="n">FuzzyFloat</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">html_title</span> <span class="o">=</span> <span class="s2">&quot;when searching: value|value+/-10%|range: 13.4|~13.4|13-14&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dbtype</span> <span class="o">=</span> <span class="n">dbtype</span>
+        <span class="k">if</span> <span class="n">db_repstr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql_type</span> <span class="o">=</span> <span class="n">SQLITE_STR</span><span class="p">[</span><span class="n">dbtype</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql_type</span> <span class="o">=</span> <span class="n">db_repstr</span>
+
+<div class="viewcode-block" id="CType.convert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CType.convert">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fromtype</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbtype</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CType.revert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CType.revert">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">db_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">db_data</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbtype</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Wrong type of database data </span><span class="si">%s</span><span class="s2">, expected </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">db_data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbtype</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fromtype</span><span class="p">(</span><span class="n">db_data</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CDate">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CDate">[docs]</a>
+<span class="k">class</span> <span class="nc">CDate</span><span class="p">(</span><span class="n">Converter</span><span class="p">):</span>
+    <span class="n">sql_type</span> <span class="o">=</span> <span class="s2">&quot;TEXT&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="CDate.convert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CDate.convert">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="n">datetime</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="CDate.revert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CDate.revert">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">db_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">db_data</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="CDate.revert_serializable">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CDate.revert_serializable">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert_serializable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_data</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">db_data</span></div>
+
+
+<div class="viewcode-block" id="CDate.html_input">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CDate.html_input">[docs]</a>
+    <span class="k">def</span> <span class="nf">html_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;input type=&quot;text&quot; name=&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; id=&quot;compound </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; value=&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="s1">&#39; placeholder=&quot;date: </span><span class="si">{year}</span><span class="s1">-</span><span class="si">{month}</span><span class="s1">-</span><span class="si">{day}</span><span class="s1"> </span><span class="si">{hours}</span><span class="s1">:</span><span class="si">{minutes}</span><span class="s1">:</span><span class="si">{seconds}</span><span class="s1">&quot; title=&quot;2021-01-10 00:00:00&quot; /&gt;&#39;</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CFormula">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CFormula">[docs]</a>
+<span class="k">class</span> <span class="nc">CFormula</span><span class="p">(</span><span class="n">Converter</span><span class="p">):</span>
+    <span class="n">comparator</span> <span class="o">=</span> <span class="n">FormulaComparator</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="CFormula.convert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CFormula.convert">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">Formula</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CFormula.revert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CFormula.revert">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_data</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">db_data</span></div>
+
+
+<div class="viewcode-block" id="CFormula.html_input">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CFormula.html_input">[docs]</a>
+    <span class="k">def</span> <span class="nf">html_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;input type=&quot;text&quot; name=&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; id=&quot;compound </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; value=&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="s1">&#39; placeholder=&quot;Fe2O3 / H[2]2O / H2(C2H4)4&quot; title=&quot;Chemical Formula: &#39;</span>
+            <span class="s1">&#39;Fe2O3 / H[2]2O / H2(C2H4)4 / ~F&quot; /&gt;&#39;</span>
+            <span class="s1">&#39;&lt;div class=&quot;tooltip&quot;&gt;🛈&lt;div class=&quot;tooltiptext&quot;&gt;&#39;</span>
+            <span class="s2">&quot;Chemical formula of a compound can be provided in various ways. &quot;</span>
+            <span class="s2">&quot;It will typically be a sequence of &quot;</span>
+            <span class="s2">&quot;chemical elements followed each by a number.&lt;br/&gt;Isotopes are written &quot;</span>
+            <span class="s2">&quot;with the mass number N in square brackets. &quot;</span>
+            <span class="s2">&quot;&lt;i&gt;D&lt;/i&gt; is also accepted for H[2].&quot;</span>
+            <span class="s2">&quot;&lt;br/&gt;Repreating groups can be provided by a sub-formula in round brackets &quot;</span>
+            <span class="s2">&quot;followed by a number of repetitions. &quot;</span>
+            <span class="s2">&quot;&lt;br/&gt;For organic molecules that exchange hydrogen atoms with their environment, &quot;</span>
+            <span class="s2">&quot;such exchangeable hydrogens are written separately as &lt;i&gt;Hx&lt;/i&gt; element.&quot;</span>
+            <span class="s2">&quot;&lt;br/&gt;In searches the match is exect (besides re-ordering the elements), &quot;</span>
+            <span class="s2">&quot;a rough search can be indicated by &quot;</span>
+            <span class="s2">&quot;adding a tilde (~) before the formula.&lt;br/&gt;Examples:&lt;br/&gt;&quot;</span>
+            <span class="s2">&quot;Fe2O3 / H[2]2O / H2(C2H4)4 / ~F&quot;</span>
+            <span class="s2">&quot;&lt;/div&gt;&lt;/div&gt;&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ValidatedString">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.ValidatedString">[docs]</a>
+<span class="k">class</span> <span class="nc">ValidatedString</span><span class="p">(</span><span class="n">CType</span><span class="p">):</span>
+    <span class="n">regex</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">placeholder</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">CType</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ValidatedString.convert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.ValidatedString.convert">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regex</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CType</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not a valid </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">data</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="ValidatedString.html_input">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.ValidatedString.html_input">[docs]</a>
+    <span class="k">def</span> <span class="nf">html_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;input type=&quot;text&quot; name=&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; id=&quot;compound </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; value=&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="s1">&#39; placeholder=&quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">+</span> <span class="s1">&#39;&quot; title=&quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">+</span> <span class="s1">&#39;&quot; /&gt;&#39;</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CUrl">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CUrl">[docs]</a>
+<span class="k">class</span> <span class="nc">CUrl</span><span class="p">(</span><span class="n">ValidatedString</span><span class="p">):</span>
+    <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;^https?://&quot;</span>  <span class="c1"># http:// or https://</span>
+        <span class="sa">r</span><span class="s2">&quot;(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|&quot;</span>  <span class="c1"># domain...</span>
+        <span class="sa">r</span><span class="s2">&quot;localhost|&quot;</span>  <span class="c1"># localhost...</span>
+        <span class="sa">r</span><span class="s2">&quot;\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})&quot;</span>  <span class="c1"># ...or ip</span>
+        <span class="sa">r</span><span class="s2">&quot;(?::\d+)?&quot;</span>  <span class="c1"># optional port</span>
+        <span class="sa">r</span><span class="s2">&quot;(?:/?|[/?]\S+)$&quot;</span><span class="p">,</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">placeholder</span> <span class="o">=</span> <span class="s2">&quot;http://www.your_website.net&quot;</span></div>
+
+
+
+<span class="c1"># The user email gets encrypted, which does not allow verification on database level</span>
+<span class="c1"># class CMail(ValidatedString):</span>
+<span class="c1">#     regex = re.compile(r&#39;\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b&#39;, re.IGNORECASE)</span>
+<span class="c1">#     placeholder = &#39;your.name@domain.net&#39;</span>
+<span class="c1">#</span>
+<span class="c1">#     def html_input(self, field, value):</span>
+<span class="c1">#         return f&#39;&lt;input type=&quot;email&quot; name=&quot;{field}&quot; id=&quot;compound {field}&quot; value=&quot;{value}&quot;&#39; \</span>
+<span class="c1">#                &#39; placeholder=&quot;&#39;+self.placeholder+&#39;&quot; title=&quot;&#39;+self.placeholder+&#39;&quot; /&gt;&#39;</span>
+
+
+<div class="viewcode-block" id="CMail">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CMail">[docs]</a>
+<span class="k">class</span> <span class="nc">CMail</span><span class="p">(</span><span class="n">CType</span><span class="p">):</span>
+    <span class="n">placeholder</span> <span class="o">=</span> <span class="s2">&quot;your.name@domain.net&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">CType</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CMail.html_input">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CMail.html_input">[docs]</a>
+    <span class="k">def</span> <span class="nf">html_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;input type=&quot;email&quot; name=&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; id=&quot;compound </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; value=&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="s1">&#39; placeholder=&quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">+</span> <span class="s1">&#39;&quot; title=&quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">+</span> <span class="s1">&#39;&quot; /&gt;&#39;</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Cdoi">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.Cdoi">[docs]</a>
+<span class="k">class</span> <span class="nc">Cdoi</span><span class="p">(</span><span class="n">ValidatedString</span><span class="p">):</span>
+    <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;^https://doi.org/&quot;</span>  <span class="c1"># https://</span>
+        <span class="sa">r</span><span class="s2">&quot;(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|&quot;</span>  <span class="c1"># domain...</span>
+        <span class="sa">r</span><span class="s2">&quot;localhost|&quot;</span>  <span class="c1"># localhost...</span>
+        <span class="sa">r</span><span class="s2">&quot;\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})&quot;</span>  <span class="c1"># ...or ip</span>
+        <span class="sa">r</span><span class="s2">&quot;(?::\d+)?&quot;</span>  <span class="c1"># optional port</span>
+        <span class="sa">r</span><span class="s2">&quot;(?:/?|[/?]\S+)$&quot;</span><span class="p">,</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">placeholder</span> <span class="o">=</span> <span class="s2">&quot;https://doi.org/your/ref&quot;</span>
+
+<div class="viewcode-block" id="Cdoi.convert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.Cdoi.convert">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># if entry is just the doi value it is replaced by the url</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;http&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ValidatedString</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ValidatedString</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;https://doi.org/&quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Ccas">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.Ccas">[docs]</a>
+<span class="k">class</span> <span class="nc">Ccas</span><span class="p">(</span><span class="n">ValidatedString</span><span class="p">):</span>
+    <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\b[1-9][0-9]{1,5}-\d</span><span class="si">{2}</span><span class="s2">-\d\b&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+    <span class="n">placeholder</span> <span class="o">=</span> <span class="s2">&quot;xxxxxxx-yy-z&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="CArray">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CArray">[docs]</a>
+<span class="k">class</span> <span class="nc">CArray</span><span class="p">(</span><span class="n">Converter</span><span class="p">):</span>
+    <span class="c1"># convert numpy array to bytest representation and back</span>
+    <span class="n">sql_type</span> <span class="o">=</span> <span class="s2">&quot;BLOB&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ndim</span> <span class="o">=</span> <span class="n">ndim</span>
+
+<div class="viewcode-block" id="CArray.convert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CArray.convert">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">adata</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">adata</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Array shape should be </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ndim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ndim</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Array dimension should be </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ndim</span><span class="p">)</span>
+        <span class="n">type_char</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+        <span class="n">pre_chars</span> <span class="o">=</span> <span class="n">type_char</span> <span class="o">+</span> <span class="n">dim</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># for arrays &gt;1d store the array shape before the data</span>
+            <span class="c1"># first store the length of the shape string and then</span>
+            <span class="c1"># the string itself</span>
+            <span class="n">shapestr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+            <span class="n">shapelen</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%06i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">shapestr</span><span class="p">))</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+            <span class="n">pre_chars</span> <span class="o">+=</span> <span class="n">shapelen</span> <span class="o">+</span> <span class="n">shapestr</span>
+        <span class="n">str_data</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">pre_chars</span> <span class="o">+</span> <span class="n">str_data</span></div>
+
+
+<div class="viewcode-block" id="CArray.revert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CArray.revert">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">db_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">db_data</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">bytes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Array type needs binary string to revert&quot;</span><span class="p">)</span>
+
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">db_data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ndim</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">db_data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">shapelen</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">db_data</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">))</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">db_data</span><span class="p">[</span><span class="mi">8</span> <span class="p">:</span> <span class="mi">8</span> <span class="o">+</span> <span class="n">shapelen</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">))</span>
+            <span class="n">dstart</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">+</span> <span class="n">shapelen</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dstart</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">frombuffer</span><span class="p">(</span><span class="n">db_data</span><span class="p">[</span><span class="n">dstart</span><span class="p">:],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CArray.revert_serializable">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CArray.revert_serializable">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert_serializable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">db_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">revert</span><span class="p">(</span><span class="n">db_data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">complex</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CLimited">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CLimited">[docs]</a>
+<span class="k">class</span> <span class="nc">CLimited</span><span class="p">(</span><span class="n">CType</span><span class="p">):</span>
+
+    <span class="c1"># a converter for numbers that checks the range</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromtype</span><span class="p">,</span> <span class="n">db_type</span><span class="p">,</span> <span class="n">low_lim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">up_lim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">db_repstr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">CType</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromtype</span><span class="p">,</span> <span class="n">db_type</span><span class="p">,</span> <span class="n">db_repstr</span><span class="o">=</span><span class="n">db_repstr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_low_lim</span> <span class="o">=</span> <span class="n">low_lim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_up_lim</span> <span class="o">=</span> <span class="n">up_lim</span>
+
+<div class="viewcode-block" id="CLimited.validate">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CLimited.validate">[docs]</a>
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">CType</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_low_lim</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low_lim</span> <span class="o">&lt;=</span> <span class="n">data</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_up_lim</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_up_lim</span> <span class="o">&gt;=</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="CLimited.convert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CLimited.convert">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">CType</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_low_lim</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low_lim</span> <span class="o">&lt;=</span> <span class="n">value</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_up_lim</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_up_lim</span> <span class="o">&gt;=</span> <span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Value out of range, has to be </span><span class="si">%s</span><span class="s2">&lt;value&lt;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_low_lim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_up_lim</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="CLimited.html_input">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CLimited.html_input">[docs]</a>
+    <span class="k">def</span> <span class="nf">html_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;input type=&quot;text&quot; name=&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; id=&quot;compound </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; value=&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39; placeholder=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_low_lim</span><span class="si">}</span><span class="s1">&lt;value&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_up_lim</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39; title=&quot;when searching: value|value+/-10%|range: 13.4|~13.4|13-14&quot; /&gt;&#39;</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CComplex">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CComplex">[docs]</a>
+<span class="k">class</span> <span class="nc">CComplex</span><span class="p">(</span><span class="n">CArray</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">CArray</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,),</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CComplex.convert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CComplex.convert">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">complex</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Needs to be complex number&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">CArray</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">data</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="CComplex.revert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CComplex.revert">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">db_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CArray</span><span class="o">.</span><span class="n">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_data</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="CComplex.revert_serializable">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CComplex.revert_serializable">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert_serializable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">db_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">revert</span><span class="p">(</span><span class="n">db_data</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="CComplex.html_input">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CComplex.html_input">[docs]</a>
+    <span class="k">def</span> <span class="nf">html_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;input type=&quot;text&quot; name=&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; id=&quot;compound </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; value=&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="s1">&#39; placeholder=&quot;complex: (real)+(imag)j&quot;/&gt;&#39;</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CSelect">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CSelect">[docs]</a>
+<span class="k">class</span> <span class="nc">CSelect</span><span class="p">(</span><span class="n">CType</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">options</span>
+        <span class="n">CType</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CSelect.convert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CSelect.convert">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">CType</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Value has to be in selection </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="CSelect.html_input">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CSelect.html_input">[docs]</a>
+    <span class="k">def</span> <span class="nf">html_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;select name=&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; id=&quot;compound </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot;&gt;&#39;</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="s1">&#39;&lt;option value=&quot;&quot;&gt;&lt;/option&gt;&#39;</span>
+        <span class="k">for</span> <span class="n">selection</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">selection</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;option value=&quot;</span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s1">&quot; selected&gt;</span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s1">&lt;/option&gt;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;option value=&quot;</span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s1">&quot;&gt;</span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s1">&lt;/option&gt;&#39;</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/select&gt;&quot;</span>
+        <span class="k">return</span> <span class="n">output</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CMultiSelect">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CMultiSelect">[docs]</a>
+<span class="k">class</span> <span class="nc">CMultiSelect</span><span class="p">(</span><span class="n">CType</span><span class="p">):</span>
+    <span class="n">html_list</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">options</span>
+        <span class="n">CType</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CMultiSelect.convert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CMultiSelect.convert">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Item have to be in selection </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CMultiSelect.revert">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CMultiSelect.revert">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">db_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="n">db_data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CMultiSelect.html_input">
+<a class="viewcode-back" href="../../../orsopy.slddb.converters.html#orsopy.slddb.converters.CMultiSelect.html_input">[docs]</a>
+    <span class="k">def</span> <span class="nf">html_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;select name=&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; id=&quot;compound </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; multiple&gt;&#39;</span>
+        <span class="k">for</span> <span class="n">selection</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">selection</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;option value=&quot;</span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s1">&quot; selected&gt;</span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s1">&lt;/option&gt;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;option value=&quot;</span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s1">&quot;&gt;</span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s1">&lt;/option&gt;&#39;</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/select&gt;&lt;br /&gt;&quot;</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;div class=&quot;hide_mobile&quot;&gt;&lt;input type=&quot;button&quot; id=&quot;btnReset </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;value=&quot;clear&quot; class=&quot;clear_field&quot; data-field=&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">&quot; /&gt;&#39;</span>
+        <span class="p">)</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="s2">&quot; use ctrl+click&lt;/div&gt;&quot;</span>
+        <span class="k">return</span> <span class="n">output</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

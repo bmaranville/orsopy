@@ -1,0 +1,7 @@
+orsopy.fileio.tests.test\_base module
+=====================================
+
+.. automodule:: orsopy.fileio.tests.test_base
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+orsopy.slddb.tests.test\_dbcreation module
+==========================================
+
+.. automodule:: orsopy.slddb.tests.test_dbcreation
+   :members:
+   :undoc-members:
+   :show-inheritance:

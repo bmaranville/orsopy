@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.fileio.data_source &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=6efca38a"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="orsopy.fileio.reduction" href="orsopy.fileio.reduction.html" />
+    <link rel="prev" title="orsopy.fileio.base" href="orsopy.fileio.base.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">orsopy.fileio.data_source</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/orsopy.fileio.data_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-orsopy.fileio.data_source">
+<span id="orsopy-fileio-data-source"></span><h1>orsopy.fileio.data_source<a class="headerlink" href="#module-orsopy.fileio.data_source" title="Link to this heading"></a></h1>
+<p>Implementation of the data_source for the ORSO header.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Experiment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.fileio.data_source.</span></span><span class="sig-name descname"><span class="pre">Experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instrument</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facility</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proposalID</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/data_source.html#Experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.data_source.Experiment" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Header" title="orsopy.fileio.base.Header"><code class="xref py py-class docutils literal notranslate"><span class="pre">Header</span></code></a></p>
+<p>A definition of the experiment performed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Proposal or project title.</p></li>
+<li><p><strong>instrument</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Reflectometer identifier.</p></li>
+<li><p><strong>start_date</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></span>) – Start date for the experiment.</p></li>
+<li><p><strong>probe</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'neutron'</span></code>, <code class="docutils literal notranslate"><span class="pre">'x-ray'</span></code>]</span>) – Radiation probe, either <code class="code docutils literal notranslate"><span class="pre">'neutron'</span></code> or
+<code class="code docutils literal notranslate"><span class="pre">'x-ray'</span></code>.</p></li>
+<li><p><strong>facility</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Facility where the experiment was performed.</p></li>
+<li><p><strong>proposalID</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Identifier for experiment at a facility.</p></li>
+<li><p><strong>doi</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Digital object identifier for the experiment, possibly
+provided by the facility.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Experiment.title">
+<span class="sig-name descname"><span class="pre">title</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#orsopy.fileio.data_source.Experiment.title" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Experiment.instrument">
+<span class="sig-name descname"><span class="pre">instrument</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#orsopy.fileio.data_source.Experiment.instrument" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Experiment.start_date">
+<span class="sig-name descname"><span class="pre">start_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></em><a class="headerlink" href="#orsopy.fileio.data_source.Experiment.start_date" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Experiment.probe">
+<span class="sig-name descname"><span class="pre">probe</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code><span class="pre">[</span><code class="docutils literal notranslate"><span class="pre">'neutron'</span></code><span class="pre">,</span> <code class="docutils literal notranslate"><span class="pre">'x-ray'</span></code><span class="pre">]</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Experiment.probe" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Experiment.facility">
+<span class="sig-name descname"><span class="pre">facility</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Experiment.facility" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Experiment.proposalID">
+<span class="sig-name descname"><span class="pre">proposalID</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Experiment.proposalID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Experiment.doi">
+<span class="sig-name descname"><span class="pre">doi</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Experiment.doi" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Experiment.comment">
+<span class="sig-name descname"><span class="pre">comment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Experiment.comment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Sample">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.fileio.data_source.</span></span><span class="sig-name descname"><span class="pre">Sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">composition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/data_source.html#Sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.data_source.Sample" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Header" title="orsopy.fileio.base.Header"><code class="xref py py-class docutils literal notranslate"><span class="pre">Header</span></code></a></p>
+<p>A description of the sample measured.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – An identified for the individual sample or the subject and
+state being measured.</p></li>
+<li><p><strong>category</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Simple sample description, front (beam side) / back,
+each side should be one of <code class="code docutils literal notranslate"><span class="pre">'solid/liquid'</span></code>,
+<code class="code docutils literal notranslate"><span class="pre">'liquid/solid'</span></code>, <code class="code docutils literal notranslate"><span class="pre">'gas/liquid'</span></code>,
+<code class="code docutils literal notranslate"><span class="pre">'liquid/liquid'</span></code>, <code class="code docutils literal notranslate"><span class="pre">'solid/gas'</span></code>, <code class="code docutils literal notranslate"><span class="pre">'gas/solid'</span></code>.</p></li>
+<li><p><strong>composition</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Notes on the nominal composition of the sample e.g.
+<code class="code docutils literal notranslate"><span class="pre">Si</span> <span class="pre">|</span> <span class="pre">SiO2</span> <span class="pre">(20</span> <span class="pre">angstrom)</span> <span class="pre">|</span> <span class="pre">Fe</span> <span class="pre">(200</span> <span class="pre">angstrom)</span> <span class="pre">|</span>
+<span class="pre">air</span> <span class="pre">(beam</span> <span class="pre">side)</span></code>.</p></li>
+<li><p><strong>description</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Further details of the sample, e.g. size.</p></li>
+<li><p><strong>size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ValueVector" title="orsopy.fileio.base.ValueVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueVector</span></code></a>]</span>) – Sample size in x, y, z direction, where z is parallel to the surface normal
+and x is along the beam direction (important for footprint correction).</p></li>
+<li><p><strong>environment</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span>) – Name of the sample environment device(s).</p></li>
+<li><p><strong>sample_parameters</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Value" title="orsopy.fileio.base.Value"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value</span></code></a>, <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ValueRange" title="orsopy.fileio.base.ValueRange"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueRange</span></code></a>, <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ValueVector" title="orsopy.fileio.base.ValueVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueVector</span></code></a>, <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ComplexValue" title="orsopy.fileio.base.ComplexValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexValue</span></code></a>, <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.AlternatingField" title="orsopy.fileio.base.AlternatingField"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlternatingField</span></code></a>]]]</span>) – Dictionary of sample parameters. See Sample.PARAMETER_DEFAULT_KEYS
+for some common names defined in the specification.</p></li>
+<li><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="orsopy.fileio.model_language.html#orsopy.fileio.model_language.SampleModel" title="orsopy.fileio.model_language.SampleModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SampleModel</span></code></a>]</span>) – A model using the simple model description  (<a class="reference external" href="https://www.reflectometry.org/projects/simple_model">https://www.reflectometry.org/projects/simple_model</a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Sample.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#orsopy.fileio.data_source.Sample.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Sample.category">
+<span class="sig-name descname"><span class="pre">category</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Sample.category" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Sample.composition">
+<span class="sig-name descname"><span class="pre">composition</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Sample.composition" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Sample.description">
+<span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Sample.description" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Sample.size">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ValueVector" title="orsopy.fileio.base.ValueVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueVector</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Sample.size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Sample.environment">
+<span class="sig-name descname"><span class="pre">environment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Sample.environment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Sample.sample_parameters">
+<span class="sig-name descname"><span class="pre">sample_parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Value" title="orsopy.fileio.base.Value"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value</span></code></a><span class="pre">,</span> <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ValueRange" title="orsopy.fileio.base.ValueRange"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueRange</span></code></a><span class="pre">,</span> <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ValueVector" title="orsopy.fileio.base.ValueVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueVector</span></code></a><span class="pre">,</span> <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ComplexValue" title="orsopy.fileio.base.ComplexValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexValue</span></code></a><span class="pre">,</span> <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.AlternatingField" title="orsopy.fileio.base.AlternatingField"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlternatingField</span></code></a><span class="pre">]]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Sample.sample_parameters" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Sample.model">
+<span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><a class="reference internal" href="orsopy.fileio.model_language.html#orsopy.fileio.model_language.SampleModel" title="orsopy.fileio.model_language.SampleModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SampleModel</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Sample.model" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Sample.PARAMETER_DEFAULT_KEYS">
+<span class="sig-name descname"><span class="pre">PARAMETER_DEFAULT_KEYS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['temperature',</span> <span class="pre">'magnetic_field',</span> <span class="pre">'electric_potential',</span> <span class="pre">'electric_current',</span> <span class="pre">'electric_ac_field']</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Sample.PARAMETER_DEFAULT_KEYS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Sample.comment">
+<span class="sig-name descname"><span class="pre">comment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Sample.comment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.fileio.data_source.</span></span><span class="sig-name descname"><span class="pre">Polarization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/data_source.html#Polarization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.data_source.Polarization" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Polarization of the beam used for the reflectivity.</p>
+<p>Neutrons:
+The first symbol indicates the magnetisation direction of the incident
+beam, the second symbol indicates the direction of the scattered
+beam. If either polarization or analysis are not employed the
+symbol is replaced by “o”.</p>
+<p>X-rays:
+Uses the conventional names pi, sigma, left and right. In experiments
+with polarization analysis the incident and outgoing polarizations
+are separated with an underscore “_”.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.unpolarized">
+<span class="sig-name descname"><span class="pre">unpolarized</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'unpolarized'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.unpolarized" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.po">
+<span class="sig-name descname"><span class="pre">po</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'po'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.po" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.mo">
+<span class="sig-name descname"><span class="pre">mo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mo'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.mo" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.op">
+<span class="sig-name descname"><span class="pre">op</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'op'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.op" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.om">
+<span class="sig-name descname"><span class="pre">om</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'om'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.om" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.mm">
+<span class="sig-name descname"><span class="pre">mm</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mm'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.mm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.mp">
+<span class="sig-name descname"><span class="pre">mp</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mp'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.mp" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.pm">
+<span class="sig-name descname"><span class="pre">pm</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pm'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.pm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.pp">
+<span class="sig-name descname"><span class="pre">pp</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pp'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.pp" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.pi">
+<span class="sig-name descname"><span class="pre">pi</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pi'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.pi" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.sigma">
+<span class="sig-name descname"><span class="pre">sigma</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sigma'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.sigma" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.left">
+<span class="sig-name descname"><span class="pre">left</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'left'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.left" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.right">
+<span class="sig-name descname"><span class="pre">right</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'right'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.right" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.pi_pi">
+<span class="sig-name descname"><span class="pre">pi_pi</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pi_pi'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.pi_pi" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.sigma_sigma">
+<span class="sig-name descname"><span class="pre">sigma_sigma</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sigma_sigma'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.sigma_sigma" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.pi_sigma">
+<span class="sig-name descname"><span class="pre">pi_sigma</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pi_sigma'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.pi_sigma" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.sigma_pi">
+<span class="sig-name descname"><span class="pre">sigma_pi</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sigma_pi'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.sigma_pi" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Polarization.yaml_representer">
+<span class="sig-name descname"><span class="pre">yaml_representer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dumper</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/data_source.html#Polarization.yaml_representer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.data_source.Polarization.yaml_representer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.InstrumentSettings">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.fileio.data_source.</span></span><span class="sig-name descname"><span class="pre">InstrumentSettings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incident_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polarization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Polarization.unpolarized</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/data_source.html#InstrumentSettings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.data_source.InstrumentSettings" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Header" title="orsopy.fileio.base.Header"><code class="xref py py-class docutils literal notranslate"><span class="pre">Header</span></code></a></p>
+<p>Settings associated with the instrumentation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>incident_angle</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Value" title="orsopy.fileio.base.Value"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value</span></code></a>, <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ValueRange" title="orsopy.fileio.base.ValueRange"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueRange</span></code></a>]</span>) – Angle (range) of incidence.</p></li>
+<li><p><strong>wavelength</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Value" title="orsopy.fileio.base.Value"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value</span></code></a>, <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ValueRange" title="orsopy.fileio.base.ValueRange"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueRange</span></code></a>]</span>) – Neutron/x-ray wavelength (range).</p></li>
+<li><p><strong>polarization</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="#orsopy.fileio.data_source.Polarization" title="orsopy.fileio.data_source.Polarization"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polarization</span></code></a>, <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ValueVector" title="orsopy.fileio.base.ValueVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueVector</span></code></a>]</span>) – Radiation polarization as one of
+<code class="code docutils literal notranslate"><span class="pre">'unpolarized'</span></code>, <code class="code docutils literal notranslate"><span class="pre">'p'</span></code>, <code class="code docutils literal notranslate"><span class="pre">'m'</span></code>, <code class="code docutils literal notranslate"><span class="pre">'pp'</span></code>,
+<code class="code docutils literal notranslate"><span class="pre">'pm'</span></code>, <code class="code docutils literal notranslate"><span class="pre">'mp'</span></code>, <code class="code docutils literal notranslate"><span class="pre">'mm'</span></code>, or a
+<a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ValueVector" title="orsopy.fileio.base.ValueVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">orsopy.fileio.base.ValueVector</span></code></a>.</p></li>
+<li><p><strong>configuration</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Description of the instreument configuration (full
+polarized/liquid surface/etc).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.InstrumentSettings.incident_angle">
+<span class="sig-name descname"><span class="pre">incident_angle</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Value" title="orsopy.fileio.base.Value"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value</span></code></a><span class="pre">,</span> <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ValueRange" title="orsopy.fileio.base.ValueRange"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueRange</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#orsopy.fileio.data_source.InstrumentSettings.incident_angle" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.InstrumentSettings.wavelength">
+<span class="sig-name descname"><span class="pre">wavelength</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Value" title="orsopy.fileio.base.Value"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value</span></code></a><span class="pre">,</span> <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ValueRange" title="orsopy.fileio.base.ValueRange"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueRange</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#orsopy.fileio.data_source.InstrumentSettings.wavelength" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.InstrumentSettings.polarization">
+<span class="sig-name descname"><span class="pre">polarization</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><a class="reference internal" href="#orsopy.fileio.data_source.Polarization" title="orsopy.fileio.data_source.Polarization"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polarization</span></code></a><span class="pre">,</span> <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.ValueVector" title="orsopy.fileio.base.ValueVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueVector</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'unpolarized'</span></em><a class="headerlink" href="#orsopy.fileio.data_source.InstrumentSettings.polarization" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.InstrumentSettings.configuration">
+<span class="sig-name descname"><span class="pre">configuration</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.InstrumentSettings.configuration" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.InstrumentSettings.comment">
+<span class="sig-name descname"><span class="pre">comment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.InstrumentSettings.comment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Measurement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.fileio.data_source.</span></span><span class="sig-name descname"><span class="pre">Measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instrument_settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/data_source.html#Measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.data_source.Measurement" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Header" title="orsopy.fileio.base.Header"><code class="xref py py-class docutils literal notranslate"><span class="pre">Header</span></code></a></p>
+<p>The measurement elements for the header.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instrument_settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#orsopy.fileio.data_source.InstrumentSettings" title="orsopy.fileio.data_source.InstrumentSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">InstrumentSettings</span></code></a></span>) – Instrumentation details.</p></li>
+<li><p><strong>data_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.File" title="orsopy.fileio.base.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span>) – Raw data files produced in the measurement.</p></li>
+<li><p><strong>additional_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.File" title="orsopy.fileio.base.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]]</span>) – Raw reference files used in the reduction.</p></li>
+<li><p><strong>scheme</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'angle-</span> <span class="pre">and</span> <span class="pre">energy-dispersive'</span></code>, <code class="docutils literal notranslate"><span class="pre">'angle-dispersive'</span></code>, <code class="docutils literal notranslate"><span class="pre">'energy-dispersive'</span></code>]]</span>) – Measurement scheme (one of <code class="code docutils literal notranslate"><span class="pre">'angle-dispersive'</span></code>,
+<code class="code docutils literal notranslate"><span class="pre">'energy-dispersive'</span></code>/<code class="code docutils literal notranslate"><span class="pre">'angle-</span> <span class="pre">and</span> <span class="pre">energy-dispersive'</span></code>).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Measurement.instrument_settings">
+<span class="sig-name descname"><span class="pre">instrument_settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#orsopy.fileio.data_source.InstrumentSettings" title="orsopy.fileio.data_source.InstrumentSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">InstrumentSettings</span></code></a></em><a class="headerlink" href="#orsopy.fileio.data_source.Measurement.instrument_settings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Measurement.data_files">
+<span class="sig-name descname"><span class="pre">data_files</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.File" title="orsopy.fileio.base.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Measurement.data_files" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Measurement.additional_files">
+<span class="sig-name descname"><span class="pre">additional_files</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.File" title="orsopy.fileio.base.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Measurement.additional_files" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Measurement.scheme">
+<span class="sig-name descname"><span class="pre">scheme</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code><span class="pre">[</span><code class="docutils literal notranslate"><span class="pre">'angle-</span> <span class="pre">and</span> <span class="pre">energy-dispersive'</span></code><span class="pre">,</span> <code class="docutils literal notranslate"><span class="pre">'angle-dispersive'</span></code><span class="pre">,</span> <code class="docutils literal notranslate"><span class="pre">'energy-dispersive'</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Measurement.scheme" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.Measurement.comment">
+<span class="sig-name descname"><span class="pre">comment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.Measurement.comment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.DataSource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.fileio.data_source.</span></span><span class="sig-name descname"><span class="pre">DataSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">owner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/fileio/data_source.html#DataSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.fileio.data_source.DataSource" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Header" title="orsopy.fileio.base.Header"><code class="xref py py-class docutils literal notranslate"><span class="pre">Header</span></code></a></p>
+<p>The data_source object definition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>owner</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Person" title="orsopy.fileio.base.Person"><code class="xref py py-class docutils literal notranslate"><span class="pre">Person</span></code></a></span>) – This refers to the actual owner of the data set, i.e. the
+main proposer or the person doing the measurement on a lab
+reflectometer.</p></li>
+<li><p><strong>experiment</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#orsopy.fileio.data_source.Experiment" title="orsopy.fileio.data_source.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Experiment</span></code></a></span>) – Details of the experimental.</p></li>
+<li><p><strong>sample</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#orsopy.fileio.data_source.Sample" title="orsopy.fileio.data_source.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sample</span></code></a></span>) – Sample information.</p></li>
+<li><p><strong>measurement</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#orsopy.fileio.data_source.Measurement" title="orsopy.fileio.data_source.Measurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code></a></span>) – Measurement specifics.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.DataSource.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="orsopy.fileio.base.html#orsopy.fileio.base.Person" title="orsopy.fileio.base.Person"><code class="xref py py-class docutils literal notranslate"><span class="pre">Person</span></code></a></em><a class="headerlink" href="#orsopy.fileio.data_source.DataSource.owner" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.DataSource.experiment">
+<span class="sig-name descname"><span class="pre">experiment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#orsopy.fileio.data_source.Experiment" title="orsopy.fileio.data_source.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Experiment</span></code></a></em><a class="headerlink" href="#orsopy.fileio.data_source.DataSource.experiment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.DataSource.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#orsopy.fileio.data_source.Sample" title="orsopy.fileio.data_source.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sample</span></code></a></em><a class="headerlink" href="#orsopy.fileio.data_source.DataSource.sample" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.DataSource.measurement">
+<span class="sig-name descname"><span class="pre">measurement</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#orsopy.fileio.data_source.Measurement" title="orsopy.fileio.data_source.Measurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code></a></em><a class="headerlink" href="#orsopy.fileio.data_source.DataSource.measurement" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.fileio.data_source.DataSource.comment">
+<span class="sig-name descname"><span class="pre">comment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.fileio.data_source.DataSource.comment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="orsopy.fileio.base.html" class="btn btn-neutral float-left" title="orsopy.fileio.base" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="orsopy.fileio.reduction.html" class="btn btn-neutral float-right" title="orsopy.fileio.reduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

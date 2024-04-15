@@ -1,0 +1,24 @@
+orsopy.slddb.element\_table package
+===================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   orsopy.slddb.element_table.element
+   orsopy.slddb.element_table.masses
+   orsopy.slddb.element_table.nabs_geant4
+   orsopy.slddb.element_table.nlengths
+   orsopy.slddb.element_table.nlengths_pt
+   orsopy.slddb.element_table.xray_henke
+   orsopy.slddb.element_table.xray_nist
+
+Module contents
+---------------
+
+.. automodule:: orsopy.slddb.element_table
+   :members:
+   :undoc-members:
+   :show-inheritance:

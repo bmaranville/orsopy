@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.fileio.tests.test_model_language &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">orsopy.fileio.tests.test_model_language</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for orsopy.fileio.tests.test_model_language</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tests for fileio.model_language module</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=R0201</span>
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pjoin</span>
+
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">from</span> <span class="nn">orsopy.fileio</span> <span class="kn">import</span> <span class="n">ComplexValue</span><span class="p">,</span> <span class="n">Value</span>
+<span class="kn">from</span> <span class="nn">orsopy.fileio</span> <span class="kn">import</span> <span class="n">model_language</span> <span class="k">as</span> <span class="n">ml</span>
+
+
+<div class="viewcode-block" id="TestMaterial">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestMaterial">[docs]</a>
+<span class="k">class</span> <span class="nc">TestMaterial</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestMaterial.test_empty">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestMaterial.test_empty">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">mat</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">()</span>
+            <span class="n">mat</span><span class="o">.</span><span class="n">resolve_defaults</span><span class="p">({})</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_values">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestMaterial.test_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">mass_density</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;magnitude&quot;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;g/cm^3&quot;</span><span class="p">})</span>
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">mass_density</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">7.0</span><span class="p">,</span> <span class="s2">&quot;g/cm^3&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_default">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestMaterial.test_default">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">ModelParameters</span><span class="p">(</span>
+            <span class="n">mass_density_unit</span><span class="o">=</span><span class="s2">&quot;g/cm^3&quot;</span><span class="p">,</span>
+            <span class="n">number_density_unit</span><span class="o">=</span><span class="s2">&quot;1/nm^3&quot;</span><span class="p">,</span>
+            <span class="n">sld_unit</span><span class="o">=</span><span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">,</span>
+            <span class="n">magnetic_moment_unit</span><span class="o">=</span><span class="s2">&quot;muB&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">mass_density</span><span class="o">=</span><span class="mf">7.0</span><span class="p">,</span> <span class="n">number_density</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">sld</span><span class="o">=</span><span class="mf">6.3e-6</span><span class="p">,</span> <span class="n">magnetic_moment</span><span class="o">=</span><span class="mf">3.4</span><span class="p">)</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">resolve_defaults</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">mass_density</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">7.0</span><span class="p">,</span> <span class="s2">&quot;g/cm^3&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">number_density</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="s2">&quot;1/nm^3&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">sld</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">6.3e-6</span><span class="p">,</span> <span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">magnetic_moment</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">3.4</span><span class="p">,</span> <span class="s2">&quot;muB&quot;</span><span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span>
+            <span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span>
+            <span class="n">mass_density</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">7.0</span><span class="p">),</span>
+            <span class="n">number_density</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">0.15</span><span class="p">),</span>
+            <span class="n">sld</span><span class="o">=</span><span class="n">ComplexValue</span><span class="p">(</span><span class="mf">6.3e-6</span><span class="p">),</span>
+            <span class="n">magnetic_moment</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">3.4</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">resolve_defaults</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_density_lookup_elements">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestMaterial.test_density_lookup_elements">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_density_lookup_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># no lookup case</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">4e-6</span><span class="p">,</span> <span class="s2">&quot;1/angstrom^3&quot;</span><span class="p">))</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">generate_density</span><span class="p">()</span>
+        <span class="c1"># single element lookup case</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Co&quot;</span><span class="p">,</span> <span class="s2">&quot;Ni&quot;</span><span class="p">,</span> <span class="s2">&quot;Si&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">]:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="n">element</span><span class="p">)</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">generate_density</span><span class="p">()</span>
+            <span class="c1"># repeat for caching</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="n">element</span><span class="p">)</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">generate_density</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">number_density</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">comment</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;density from ORSO SLD db ID&quot;</span><span class="p">)</span>
+        <span class="c1"># mixed element lookup case</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Co0.8Cr0.2Fe0.1&quot;</span><span class="p">,</span> <span class="s2">&quot;Ni3.4O5.4&quot;</span><span class="p">,</span> <span class="s2">&quot;SiC4.3425&quot;</span><span class="p">]:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="n">element</span><span class="p">)</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">generate_density</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">number_density</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">comment</span> <span class="o">==</span> <span class="s2">&quot;density from average element density from ORSO SLD db&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_sld">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestMaterial.test_sld">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_sld</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="n">ComplexValue</span><span class="p">(</span><span class="mf">3.4e-6</span><span class="p">,</span> <span class="o">-</span><span class="mf">2e-6</span><span class="p">,</span> <span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">get_sld</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="mf">3.4e-6</span> <span class="o">-</span> <span class="mf">2e-6j</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Si&quot;</span><span class="p">,</span> <span class="n">mass_density</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">2.33</span><span class="p">,</span> <span class="s2">&quot;g/cm^3&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">get_sld</span><span class="p">()</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="mf">2.07371e-6</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">get_sld</span><span class="p">()</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00002e-6</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Si&quot;</span><span class="p">,</span> <span class="n">number_density</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">0.04996026</span><span class="p">,</span> <span class="s2">&quot;1/angstrom^3&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">get_sld</span><span class="p">()</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="mf">2.07371e-6</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">get_sld</span><span class="p">()</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00002e-6</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Si&quot;</span><span class="p">,</span> <span class="n">number_density</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">49.96026</span><span class="p">,</span> <span class="s2">&quot;1/nm^3&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">get_sld</span><span class="p">()</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="mf">2.07371e-6</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">get_sld</span><span class="p">()</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00002e-6</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Si&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">get_sld</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="mf">0.0</span><span class="n">j</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestMaterial.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="n">ComplexValue</span><span class="p">(</span><span class="mf">3.4e-6</span><span class="p">,</span> <span class="o">-</span><span class="mf">2e-6</span><span class="p">,</span> <span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;sld: {real: 3.4e-06, imag: -2.0e-06, unit: 1/angstrom^2}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span>
+            <span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Si&quot;</span><span class="p">,</span>
+            <span class="n">mass_density</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">2.33</span><span class="p">,</span> <span class="s2">&quot;g/cm^3&quot;</span><span class="p">),</span>
+            <span class="n">number_density</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">0.04996026</span><span class="p">,</span> <span class="s2">&quot;1/angstrom^3&quot;</span><span class="p">),</span>
+            <span class="n">magnetic_moment</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span>
+            <span class="s2">&quot;formula: Si</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;mass_density: {magnitude: 2.33, unit: g/cm^3}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;number_density: {magnitude: 0.04996026, unit: 1/angstrom^3}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;magnetic_moment: 1.0</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestComposit">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestComposit">[docs]</a>
+<span class="k">class</span> <span class="nc">TestComposit</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestComposit.test_wrong_value">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestComposit.test_wrong_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_wrong_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">warns</span><span class="p">(</span><span class="ne">RuntimeWarning</span><span class="p">):</span>
+            <span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">(</span><span class="n">composition</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestComposit.test_resolution">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestComposit.test_resolution">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">materials</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Si&quot;</span><span class="p">)}</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">({</span><span class="s2">&quot;air&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;water&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s2">&quot;Co&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">})</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">(</span><span class="n">materials</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;air&quot;</span><span class="p">,</span> <span class="s2">&quot;water&quot;</span><span class="p">,</span> <span class="s2">&quot;Si&quot;</span><span class="p">,</span> <span class="s2">&quot;Co&quot;</span><span class="p">]:</span>
+            <span class="k">assert</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">_composition_materials</span></div>
+
+
+<div class="viewcode-block" id="TestComposit.test_defaults">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestComposit.test_defaults">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">ModelParameters</span><span class="p">(</span>
+            <span class="n">mass_density_unit</span><span class="o">=</span><span class="s2">&quot;g/cm^3&quot;</span><span class="p">,</span>
+            <span class="n">number_density_unit</span><span class="o">=</span><span class="s2">&quot;1/nm^3&quot;</span><span class="p">,</span>
+            <span class="n">sld_unit</span><span class="o">=</span><span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">,</span>
+            <span class="n">magnetic_moment_unit</span><span class="o">=</span><span class="s2">&quot;muB&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">materials</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">mass_density</span><span class="o">=</span><span class="mf">7.0</span><span class="p">,</span> <span class="n">number_density</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">sld</span><span class="o">=</span><span class="mf">6.3e-6</span><span class="p">,</span> <span class="n">magnetic_moment</span><span class="o">=</span><span class="mf">3.4</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">({</span><span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">(</span><span class="n">materials</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">resolve_defaults</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">materials</span><span class="p">[</span><span class="s2">&quot;Si&quot;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">mass_density</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">7.0</span><span class="p">,</span> <span class="s2">&quot;g/cm^3&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">number_density</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="s2">&quot;1/nm^3&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">sld</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">6.3e-6</span><span class="p">,</span> <span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">magnetic_moment</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">3.4</span><span class="p">,</span> <span class="s2">&quot;muB&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestComposit.test_density_lookup_elements">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestComposit.test_density_lookup_elements">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_density_lookup_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">materials</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">2.0e-6</span><span class="p">,</span> <span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">))}</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">({</span><span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">})</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">(</span><span class="n">materials</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">generate_density</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">get_sld</span><span class="p">(),</span> <span class="mf">1.0e-6</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestComposit.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestComposit.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">({</span><span class="s2">&quot;air&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;water&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s2">&quot;Co&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">})</span>
+        <span class="k">assert</span> <span class="n">c</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;composition:</span><span class="se">\n</span><span class="s2">  air: 0.3</span><span class="se">\n</span><span class="s2">  water: 0.3</span><span class="se">\n</span><span class="s2">  Si: 0.2</span><span class="se">\n</span><span class="s2">  Co: 0.1</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestLayer">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestLayer">[docs]</a>
+<span class="k">class</span> <span class="nc">TestLayer</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+    <span class="c1"># TODO: This test case fails. Value does not enforce float, should be fixed.</span>
+    <span class="c1"># def test_wrong_value(self):</span>
+    <span class="c1">#     with self.assertRaises(ValueError):</span>
+    <span class="c1">#         ml.Layer(thickness=&#39;abc&#39;)</span>
+
+<div class="viewcode-block" id="TestLayer.test_empty">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestLayer.test_empty">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">lay</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">()</span>
+            <span class="n">lay</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">({})</span></div>
+
+
+<div class="viewcode-block" id="TestLayer.test_resolution">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestLayer.test_resolution">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">materials</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Si&quot;</span><span class="p">)}</span>
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">composition</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;air&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;water&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s2">&quot;Co&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">})</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">(</span><span class="n">materials</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;air&quot;</span><span class="p">,</span> <span class="s2">&quot;water&quot;</span><span class="p">,</span> <span class="s2">&quot;Si&quot;</span><span class="p">,</span> <span class="s2">&quot;Co&quot;</span><span class="p">]:</span>
+            <span class="k">assert</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">lay</span><span class="o">.</span><span class="n">_composition_materials</span>
+
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="s2">&quot;Si&quot;</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">(</span><span class="n">materials</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">material</span> <span class="ow">is</span> <span class="n">materials</span><span class="p">[</span><span class="s2">&quot;Si&quot;</span><span class="p">]</span>
+
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="s2">&quot;air&quot;</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">(</span><span class="n">materials</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">material</span> <span class="ow">is</span> <span class="n">ml</span><span class="o">.</span><span class="n">SPECIAL_MATERIALS</span><span class="p">[</span><span class="s2">&quot;air&quot;</span><span class="p">]</span>
+
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="n">materials</span><span class="p">[</span><span class="s2">&quot;Si&quot;</span><span class="p">])</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">(</span><span class="n">materials</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">material</span> <span class="ow">is</span> <span class="n">materials</span><span class="p">[</span><span class="s2">&quot;Si&quot;</span><span class="p">]</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">({</span><span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})</span>
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">(</span><span class="n">materials</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">material</span> <span class="ow">is</span> <span class="n">c</span>
+
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="s2">&quot;Si&quot;</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">({})</span>
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">formula</span> <span class="o">==</span> <span class="s2">&quot;Si&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestLayer.test_defaults">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestLayer.test_defaults">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">ModelParameters</span><span class="p">(</span>
+            <span class="n">mass_density_unit</span><span class="o">=</span><span class="s2">&quot;g/cm^3&quot;</span><span class="p">,</span>
+            <span class="n">number_density_unit</span><span class="o">=</span><span class="s2">&quot;1/nm^3&quot;</span><span class="p">,</span>
+            <span class="n">sld_unit</span><span class="o">=</span><span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">,</span>
+            <span class="n">magnetic_moment_unit</span><span class="o">=</span><span class="s2">&quot;muB&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="mf">2.0e-6</span><span class="p">))</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">resolve_defaults</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">thickness</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">defaults</span><span class="o">.</span><span class="n">length_unit</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">roughness</span> <span class="o">==</span> <span class="n">defaults</span><span class="o">.</span><span class="n">roughness</span>
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">sld</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="n">defaults</span><span class="o">.</span><span class="n">sld_unit</span>
+
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">2.0e-6</span><span class="p">)),</span> <span class="n">thickness</span><span class="o">=</span><span class="mf">31.2</span><span class="p">,</span> <span class="n">roughness</span><span class="o">=</span><span class="mf">1.3</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">resolve_defaults</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">thickness</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">31.2</span><span class="p">,</span> <span class="n">defaults</span><span class="o">.</span><span class="n">length_unit</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">roughness</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">1.3</span><span class="p">,</span> <span class="n">defaults</span><span class="o">.</span><span class="n">length_unit</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">sld</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="n">defaults</span><span class="o">.</span><span class="n">sld_unit</span>
+
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span>
+            <span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">2.0e-6</span><span class="p">,</span> <span class="n">defaults</span><span class="o">.</span><span class="n">sld_unit</span><span class="p">)),</span> <span class="n">thickness</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">31.2</span><span class="p">),</span> <span class="n">roughness</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">1.3</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">resolve_defaults</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">thickness</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">31.2</span><span class="p">,</span> <span class="n">defaults</span><span class="o">.</span><span class="n">length_unit</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">roughness</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">1.3</span><span class="p">,</span> <span class="n">defaults</span><span class="o">.</span><span class="n">length_unit</span><span class="p">)</span>
+
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">composition</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">({</span><span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="mf">2.0e-6</span><span class="p">)})</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">resolve_defaults</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">_composition_materials</span><span class="p">[</span><span class="s2">&quot;Si&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sld</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="n">defaults</span><span class="o">.</span><span class="n">sld_unit</span></div>
+
+
+<div class="viewcode-block" id="TestLayer.test_material_mixing">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestLayer.test_material_mixing">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_material_mixing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">composition</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">({</span><span class="s2">&quot;Si&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">2.0e-6</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">))})</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">generate_material</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lay</span><span class="o">.</span><span class="n">material</span><span class="p">,</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">lay</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">sld</span> <span class="o">==</span> <span class="n">ComplexValue</span><span class="p">(</span><span class="mf">2.0e-6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestSubStack">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestSubStack">[docs]</a>
+<span class="k">class</span> <span class="nc">TestSubStack</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSubStack.test_empty">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestSubStack.test_empty">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">empty</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">SubStack</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">empty</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">({})</span></div>
+
+
+<div class="viewcode-block" id="TestSubStack.test_resolution">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestSubStack.test_resolution">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">SubStack</span><span class="p">(</span><span class="n">stack</span><span class="o">=</span><span class="s2">&quot;air | b 13 |c|d&quot;</span><span class="p">)</span>
+        <span class="n">resolvable_items</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">2e-6</span><span class="p">,</span> <span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">))),</span>
+            <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Co&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">({</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+        <span class="p">}</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">(</span><span class="n">resolvable_items</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">sequence</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span>
+        <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">SPECIAL_MATERIALS</span><span class="p">[</span><span class="s2">&quot;air&quot;</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">sequence</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">13.0</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Co&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">sequence</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">({</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}))</span>
+        <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">sequence</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="n">resolvable_items</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">]</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">SubStack</span><span class="p">(</span><span class="n">stack</span><span class="o">=</span><span class="s2">&quot;air | 2( b 13 | c 5)|d&quot;</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">(</span><span class="n">resolvable_items</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">sequence</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">SPECIAL_MATERIALS</span><span class="p">[</span><span class="s2">&quot;air&quot;</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">sequence</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">SubStack</span><span class="p">(</span>
+            <span class="n">repetitions</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">stack</span><span class="o">=</span><span class="s2">&quot;b 13 | c 5&quot;</span><span class="p">,</span>
+            <span class="n">sequence</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">13.0</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Co&quot;</span><span class="p">)),</span>
+                <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">(</span><span class="n">composition</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})),</span>
+            <span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">sequence</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">resolvable_items</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">]</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">SubStack</span><span class="p">(</span><span class="n">sequence</span><span class="o">=</span><span class="p">[</span><span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">13.0</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">),</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">)])</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">(</span><span class="n">resolvable_items</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">sequence</span> <span class="o">==</span> <span class="p">[</span>
+            <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">13.0</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Co&quot;</span><span class="p">)),</span>
+            <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">(</span><span class="n">composition</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})),</span>
+        <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TestSubStack.test_defaults">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestSubStack.test_defaults">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">ModelParameters</span><span class="p">(</span>
+            <span class="n">mass_density_unit</span><span class="o">=</span><span class="s2">&quot;g/cm^3&quot;</span><span class="p">,</span>
+            <span class="n">number_density_unit</span><span class="o">=</span><span class="s2">&quot;1/nm^3&quot;</span><span class="p">,</span>
+            <span class="n">sld_unit</span><span class="o">=</span><span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">,</span>
+            <span class="n">magnetic_moment_unit</span><span class="o">=</span><span class="s2">&quot;muB&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">SubStack</span><span class="p">(</span><span class="n">sequence</span><span class="o">=</span><span class="p">[</span><span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">13.0</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Co&quot;</span><span class="p">))])</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">resolve_defaults</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">thickness</span> <span class="o">==</span> <span class="n">Value</span><span class="p">(</span><span class="mf">13.0</span><span class="p">,</span> <span class="n">defaults</span><span class="o">.</span><span class="n">length_unit</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestSubStack.test_resolve_layers">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestSubStack.test_resolve_layers">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_resolve_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">resolvable_items</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">2e-6</span><span class="p">,</span> <span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">))),</span>
+            <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Co&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">({</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+            <span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">composition</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+        <span class="p">}</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">SubStack</span><span class="p">(</span><span class="n">stack</span><span class="o">=</span><span class="s2">&quot;air | 2( b 13 | c 5)|d|e&quot;</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">(</span><span class="n">resolvable_items</span><span class="p">)</span>
+        <span class="n">lays</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">resolve_to_layers</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">lays</span><span class="p">)</span> <span class="o">==</span> <span class="mi">7</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestSampleModel">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestSampleModel">[docs]</a>
+<span class="k">class</span> <span class="nc">TestSampleModel</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSampleModel.test_resolvable_items">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestSampleModel.test_resolvable_items">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_resolvable_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sub_stacks</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">SubStack</span><span class="p">(</span><span class="n">stack</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)}</span>
+        <span class="n">layers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">13.4</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">)}</span>
+        <span class="n">materials</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="mf">13.4</span><span class="p">)}</span>
+        <span class="n">composits</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">({</span><span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})}</span>
+        <span class="n">sm</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">SampleModel</span><span class="p">(</span>
+            <span class="n">stack</span><span class="o">=</span><span class="s2">&quot;c|a|c&quot;</span><span class="p">,</span> <span class="n">sub_stacks</span><span class="o">=</span><span class="n">sub_stacks</span><span class="p">,</span> <span class="n">layers</span><span class="o">=</span><span class="n">layers</span><span class="p">,</span> <span class="n">materials</span><span class="o">=</span><span class="n">materials</span><span class="p">,</span> <span class="n">composits</span><span class="o">=</span><span class="n">composits</span>
+        <span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">resolvable_items</span>
+        <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">==</span> <span class="p">[</span><span class="n">sub_stacks</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span> <span class="n">layers</span><span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">],</span> <span class="n">materials</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">],</span> <span class="n">composits</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="TestSampleModel.test_duplicate_name">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestSampleModel.test_duplicate_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_duplicate_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">warns</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+            <span class="n">ml</span><span class="o">.</span><span class="n">SampleModel</span><span class="p">(</span>
+                <span class="n">stack</span><span class="o">=</span><span class="s2">&quot;c|a|c&quot;</span><span class="p">,</span>
+                <span class="n">layers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">13.4</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">)},</span>
+                <span class="n">materials</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="mf">13.4</span><span class="p">)},</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestSampleModel.test_resolve_stack">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestSampleModel.test_resolve_stack">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_resolve_stack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">ModelParameters</span><span class="p">(</span>
+            <span class="n">mass_density_unit</span><span class="o">=</span><span class="s2">&quot;g/cm^3&quot;</span><span class="p">,</span>
+            <span class="n">number_density_unit</span><span class="o">=</span><span class="s2">&quot;1/nm^3&quot;</span><span class="p">,</span>
+            <span class="n">sld_unit</span><span class="o">=</span><span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">,</span>
+            <span class="n">magnetic_moment_unit</span><span class="o">=</span><span class="s2">&quot;muB&quot;</span><span class="p">,</span>
+            <span class="n">length_unit</span><span class="o">=</span><span class="s2">&quot;nm&quot;</span><span class="p">,</span>
+            <span class="n">roughness</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;nm&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">sub_stacks</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">SubStack</span><span class="p">(</span><span class="n">stack</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)}</span>
+        <span class="n">layers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">13.4</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">)}</span>
+        <span class="n">materials</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="mf">13.4</span><span class="p">)}</span>
+        <span class="n">composits</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">({</span><span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})}</span>
+        <span class="n">sm</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">SampleModel</span><span class="p">(</span>
+            <span class="n">stack</span><span class="o">=</span><span class="s2">&quot;c|2(a|c 15)|d 14|c&quot;</span><span class="p">,</span>
+            <span class="n">sub_stacks</span><span class="o">=</span><span class="n">sub_stacks</span><span class="p">,</span>
+            <span class="n">layers</span><span class="o">=</span><span class="n">layers</span><span class="p">,</span>
+            <span class="n">materials</span><span class="o">=</span><span class="n">materials</span><span class="p">,</span>
+            <span class="n">composits</span><span class="o">=</span><span class="n">composits</span><span class="p">,</span>
+            <span class="nb">globals</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">resolve_stack</span><span class="p">()</span>
+        <span class="n">subs</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">SubStack</span><span class="p">(</span><span class="n">repetitions</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stack</span><span class="o">=</span><span class="s2">&quot;a|c 15&quot;</span><span class="p">)</span>
+        <span class="n">subs</span><span class="o">.</span><span class="n">resolve_names</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">sub_stacks</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">materials</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">]})</span>
+        <span class="n">subs</span><span class="o">.</span><span class="n">resolve_defaults</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span>
+        <span class="k">assert</span> <span class="n">stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span>
+            <span class="n">thickness</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;nm&quot;</span><span class="p">),</span> <span class="n">roughness</span><span class="o">=</span><span class="n">defaults</span><span class="o">.</span><span class="n">roughness</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">materials</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">stack</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">subs</span>
+        <span class="k">assert</span> <span class="n">stack</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span>
+            <span class="n">thickness</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">14.0</span><span class="p">,</span> <span class="s2">&quot;nm&quot;</span><span class="p">),</span> <span class="n">roughness</span><span class="o">=</span><span class="n">defaults</span><span class="o">.</span><span class="n">roughness</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">composits</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">stack</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span>
+            <span class="n">thickness</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;nm&quot;</span><span class="p">),</span> <span class="n">roughness</span><span class="o">=</span><span class="n">defaults</span><span class="o">.</span><span class="n">roughness</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">materials</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">sm</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">SampleModel</span><span class="p">(</span><span class="s2">&quot;Si&quot;</span><span class="p">)</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">resolve_stack</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="n">stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span>
+            <span class="n">ml</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;nm&quot;</span><span class="p">),</span> <span class="n">roughness</span><span class="o">=</span><span class="n">defaults</span><span class="o">.</span><span class="n">roughness</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Si&quot;</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestSampleModel.test_resolve_to_layers">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_model_language.html#orsopy.fileio.tests.test_model_language.TestSampleModel.test_resolve_to_layers">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_resolve_to_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">ModelParameters</span><span class="p">(</span>
+            <span class="n">mass_density_unit</span><span class="o">=</span><span class="s2">&quot;g/cm^3&quot;</span><span class="p">,</span>
+            <span class="n">number_density_unit</span><span class="o">=</span><span class="s2">&quot;1/nm^3&quot;</span><span class="p">,</span>
+            <span class="n">sld_unit</span><span class="o">=</span><span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">,</span>
+            <span class="n">magnetic_moment_unit</span><span class="o">=</span><span class="s2">&quot;muB&quot;</span><span class="p">,</span>
+            <span class="n">length_unit</span><span class="o">=</span><span class="s2">&quot;nm&quot;</span><span class="p">,</span>
+            <span class="n">roughness</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;nm&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">sub_stacks</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">SubStack</span><span class="p">(</span><span class="n">stack</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)}</span>
+        <span class="n">layers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">13.4</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">),</span> <span class="s2">&quot;b2&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">composition</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})}</span>
+        <span class="n">materials</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="mf">13.4</span><span class="p">)}</span>
+        <span class="n">composits</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="n">ml</span><span class="o">.</span><span class="n">Composit</span><span class="p">({</span><span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})}</span>
+        <span class="n">sm</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">SampleModel</span><span class="p">(</span>
+            <span class="n">stack</span><span class="o">=</span><span class="s2">&quot;c|2(a|c 15)|b|b2|d 14|Si&quot;</span><span class="p">,</span>
+            <span class="n">sub_stacks</span><span class="o">=</span><span class="n">sub_stacks</span><span class="p">,</span>
+            <span class="n">layers</span><span class="o">=</span><span class="n">layers</span><span class="p">,</span>
+            <span class="n">materials</span><span class="o">=</span><span class="n">materials</span><span class="p">,</span>
+            <span class="n">composits</span><span class="o">=</span><span class="n">composits</span><span class="p">,</span>
+            <span class="nb">globals</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">mSi</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;Si&quot;</span><span class="p">)</span>
+        <span class="n">mSi</span><span class="o">.</span><span class="n">generate_density</span><span class="p">()</span>
+        <span class="n">ls</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">resolve_to_layers</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls</span><span class="p">)</span> <span class="o">==</span> <span class="mi">9</span>
+        <span class="k">assert</span> <span class="n">ls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;nm&quot;</span><span class="p">),</span> <span class="n">roughness</span><span class="o">=</span><span class="n">defaults</span><span class="o">.</span><span class="n">roughness</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">materials</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">ls</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">ls</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">ls</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">ls</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">ls</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">13.4</span><span class="p">,</span> <span class="s2">&quot;nm&quot;</span><span class="p">),</span> <span class="n">roughness</span><span class="o">=</span><span class="n">defaults</span><span class="o">.</span><span class="n">roughness</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">materials</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">ls</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span>
+            <span class="n">thickness</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;nm&quot;</span><span class="p">),</span>
+            <span class="n">roughness</span><span class="o">=</span><span class="n">defaults</span><span class="o">.</span><span class="n">roughness</span><span class="p">,</span>
+            <span class="n">material</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="n">ComplexValue</span><span class="p">(</span><span class="mf">13.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;1/angstrom^2&quot;</span><span class="p">),</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;composition material: 1.0xc&quot;</span><span class="p">),</span>
+            <span class="n">composition</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">ls</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="n">ml</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="mf">14.0</span><span class="p">,</span> <span class="s2">&quot;nm&quot;</span><span class="p">),</span> <span class="n">roughness</span><span class="o">=</span><span class="n">defaults</span><span class="o">.</span><span class="n">roughness</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">composits</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">ls</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">==</span> <span class="n">ml</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;nm&quot;</span><span class="p">),</span> <span class="n">roughness</span><span class="o">=</span><span class="n">defaults</span><span class="o">.</span><span class="n">roughness</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">mSi</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

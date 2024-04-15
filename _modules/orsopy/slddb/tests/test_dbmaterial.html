@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.slddb.tests.test_dbmaterial &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">orsopy.slddb.tests.test_dbmaterial</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for orsopy.slddb.tests.test_dbmaterial</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">orsopy.slddb</span> <span class="kn">import</span> <span class="n">SLDDB</span>
+<span class="kn">from</span> <span class="nn">orsopy.slddb.comparators</span> <span class="kn">import</span> <span class="n">ExactString</span>
+
+
+<div class="viewcode-block" id="TestMaterialDB">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB">[docs]</a>
+<span class="k">class</span> <span class="nc">TestMaterialDB</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">SLDDB</span>
+
+<div class="viewcode-block" id="TestMaterialDB.setUpClass">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.setUpClass">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">SLDDB</span><span class="p">(</span><span class="s2">&quot;:memory:&quot;</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">create_database</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_add_item">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_add_item">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_add_item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Iron Oxide 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">5.24</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Nickel&quot;</span><span class="p">,</span> <span class="s2">&quot;Ni&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="s2">&quot;8.9&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;TestMaterial 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">beer</span><span class="o">=</span><span class="s2">&quot;beer&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;TestMaterial 2&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_update_item">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_update_item">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_update_item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Iron Oxide E1&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">5.24</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Iron Oxide E1&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">update_material</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">],</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;updated description&quot;</span><span class="p">)</span>
+        <span class="n">res2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Iron Oxide E1&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res2</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">],</span> <span class="s2">&quot;updated description&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">update_material</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">],</span> <span class="n">fail_key</span><span class="o">=</span><span class="s2">&quot;updated description&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">update_material</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">],</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_search">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_search">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Iron Oxide 2&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">5.24</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;metal alloy&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Nickel 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Ni&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="s2">&quot;8.9&quot;</span><span class="p">)</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;oxide 2&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;density&quot;</span><span class="p">],</span> <span class="mf">5.24</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="s2">&quot;Iron Oxide 2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;formula&quot;</span><span class="p">],</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;FU_volume&quot;</span><span class="p">])</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;metal alloy&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;density&quot;</span><span class="p">],</span> <span class="mf">5.24</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="s2">&quot;Iron Oxide 2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;formula&quot;</span><span class="p">],</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;FU_volume&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_comparators">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_comparators">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_comparators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Iron Oxide 3123&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe2O32&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">99.123</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;inorganic&quot;</span><span class="p">])</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ExactString</span><span class="p">(</span><span class="s2">&quot;oxide 3&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ExactString</span><span class="p">(</span><span class="s2">&quot;Iron Oxide 3123&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># tests FormulaComparator</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;O32&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">formula</span><span class="o">=</span><span class="s2">&quot;~O32&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># tests FuzzyFloat</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">density</span><span class="o">=</span><span class="s2">&quot;99.123&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">density</span><span class="o">=</span><span class="s2">&quot;99.124&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">density</span><span class="o">=</span><span class="s2">&quot;~99.124&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">density</span><span class="o">=</span><span class="s2">&quot;99-100&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_count">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_count">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Iron Oxide Count All&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">5.2411111</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;inorganic&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Nickel Count All&quot;</span><span class="p">,</span> <span class="s2">&quot;Ni&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="s2">&quot;8.9&quot;</span><span class="p">)</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">count_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;count all&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">count_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;count all&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">count_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;count all&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">8.9</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">count_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;count all&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">5.2411111</span><span class="p">,</span> <span class="n">join_and</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">count_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;count all&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;inorganic&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">count_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ExactString</span><span class="p">(</span><span class="s2">&quot;count all&quot;</span><span class="p">),</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;inorganic&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">count_material</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_serializable_search">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_serializable_search">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_serializable_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Iron Oxide 3&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">5.24</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;iron&quot;</span><span class="p">,</span> <span class="n">serializable</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_search_fail">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_search_fail">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_search_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">beer</span><span class="o">=</span><span class="s2">&quot;beer&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Iron Oxide 4&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">5.24</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Iron Oxide 4&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">5.24</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_count_fail">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_count_fail">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_count_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">count_material</span><span class="p">(</span><span class="n">beer</span><span class="o">=</span><span class="s2">&quot;beer&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_search_empty">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_search_empty">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_search_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">()</span>
+        <span class="n">res2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;accessed&quot;</span><span class="p">],</span> <span class="n">res2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;accessed&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_search_andor">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_search_andor">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_search_andor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Iron Oxide light&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Iron Oxide heavy&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">6.0</span><span class="p">)</span>
+        <span class="n">res1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;iron&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+        <span class="n">res2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;iron&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">join_and</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">res1</span><span class="p">,</span> <span class="n">res2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_selection">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_selection">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;To Select&quot;</span><span class="p">,</span> <span class="s2">&quot;Pb&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">11.4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Nickel false&quot;</span><span class="p">,</span> <span class="s2">&quot;Ni&quot;</span><span class="p">,</span> <span class="n">FU_volume</span><span class="o">=</span><span class="mf">10.5</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">density</span><span class="o">=</span><span class="mf">11.4</span><span class="p">)</span>
+        <span class="n">mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">select_material</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">mat</span><span class="o">.</span><span class="n">dens</span><span class="p">,</span> <span class="mf">11.4</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">FU_volume</span><span class="o">=</span><span class="mf">10.5</span><span class="p">)</span>
+        <span class="n">mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">select_material</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">mat</span><span class="o">.</span><span class="n">fu_volume</span><span class="p">,</span> <span class="mf">10.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">invalidate_material</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;ID&quot;</span><span class="p">],</span> <span class="s2">&quot;testuser&quot;</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">FU_volume</span><span class="o">=</span><span class="mf">10.5</span><span class="p">,</span> <span class="n">filter_invalid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">select_material</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">mat</span><span class="o">.</span><span class="n">fu_volume</span><span class="p">,</span> <span class="mf">10.5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_validate_item">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_validate_item">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_validate_item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;To Validate&quot;</span><span class="p">,</span> <span class="s2">&quot;Pb&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">11.4</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;To Validate&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">11.4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">validate_material</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;ID&quot;</span><span class="p">],</span> <span class="s2">&quot;testuser&quot;</span><span class="p">)</span>
+        <span class="n">res2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">ID</span><span class="o">=</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;ID&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">res2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;validated&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_invalidate_item">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_invalidate_item">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_invalidate_item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;To Invalidate&quot;</span><span class="p">,</span> <span class="s2">&quot;Pb&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">11.4</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;To Invalidate&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">11.4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">invalidate_material</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;ID&quot;</span><span class="p">],</span> <span class="s2">&quot;testuser&quot;</span><span class="p">)</span>
+        <span class="n">res2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">ID</span><span class="o">=</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;ID&quot;</span><span class="p">],</span> <span class="n">filter_invalid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">res2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;invalid&quot;</span><span class="p">])</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;To Invalidate&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">11.4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_tags">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_tags">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Tag it&quot;</span><span class="p">,</span> <span class="s2">&quot;Pb&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">11.4</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;magnetic&quot;</span><span class="p">,</span> <span class="s2">&quot;metal&quot;</span><span class="p">])</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Tag it&quot;</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;accessed&quot;</span><span class="p">]</span>
+        <span class="n">res2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;magnetic&quot;</span><span class="p">])</span>
+        <span class="k">del</span> <span class="n">res2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;accessed&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res2</span><span class="p">)</span>
+        <span class="n">res2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;metal&quot;</span><span class="p">])</span>
+        <span class="k">del</span> <span class="n">res2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;accessed&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res2</span><span class="p">)</span>
+        <span class="n">res2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;magnetic&quot;</span><span class="p">,</span> <span class="s2">&quot;metal&quot;</span><span class="p">])</span>
+        <span class="k">del</span> <span class="n">res2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;accessed&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res2</span><span class="p">)</span>
+        <span class="n">res2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;polymer&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res2</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">res2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Tag it&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res2</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">res2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;accessed&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterialDB.test_access_counter">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_dbmaterial.html#orsopy.slddb.tests.test_dbmaterial.TestMaterialDB.test_access_counter">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_access_counter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="s2">&quot;Iron Oxide 5&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe2O3&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">5.24</span><span class="p">)</span>
+        <span class="n">r1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;iron&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;accessed&quot;</span><span class="p">]</span>
+        <span class="n">r2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;iron&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;accessed&quot;</span><span class="p">]</span>
+        <span class="n">r3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;iron&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;accessed&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">r1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">r2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">r2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">r3</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

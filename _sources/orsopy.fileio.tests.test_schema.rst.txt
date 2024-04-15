@@ -1,0 +1,7 @@
+orsopy.fileio.tests.test\_schema module
+=======================================
+
+.. automodule:: orsopy.fileio.tests.test_schema
+   :members:
+   :undoc-members:
+   :show-inheritance:

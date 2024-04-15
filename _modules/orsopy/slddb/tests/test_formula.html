@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.slddb.tests.test_formula &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">orsopy.slddb.tests.test_formula</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for orsopy.slddb.tests.test_formula</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">orsopy.slddb.material</span> <span class="kn">import</span> <span class="n">Formula</span>
+
+
+<div class="viewcode-block" id="TestFormula">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_formula.html#orsopy.slddb.tests.test_formula.TestFormula">[docs]</a>
+<span class="k">class</span> <span class="nc">TestFormula</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestFormula.test_valid">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_formula.html#orsopy.slddb.tests.test_formula.TestFormula.test_valid">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;NaCl&quot;</span><span class="p">)</span>
+        <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;H2 O&quot;</span><span class="p">)</span>
+        <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Cr3O4&quot;</span><span class="p">)</span>
+        <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;H12 C5O8&quot;</span><span class="p">)</span>
+        <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;H2O&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestFormula.test_isotopes">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_formula.html#orsopy.slddb.tests.test_formula.TestFormula.test_isotopes">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_isotopes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;B[10]4C&quot;</span><span class="p">)</span>
+        <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;H[2]2O&quot;</span><span class="p">)</span>
+        <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;OH[2]2&quot;</span><span class="p">)</span>
+        <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;D2O&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestFormula.test_compound_strings">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_formula.html#orsopy.slddb.tests.test_formula.TestFormula.test_compound_strings">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_compound_strings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Na(Cl)&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Na1Cl1&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;(H)2 O&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;H2O1&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Fe(HO3)2&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Fe1H2O6&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Fe1.5(HO3)2.5&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Fe1.5H2.5O7.5&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;(NaCl)2&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Na2Cl2&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Cr(BO2)3(H2O)2&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Cr1B3O8H4&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;(BO2)3Cr(H2O)2&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Cr1B3O8H4&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;(BO2)3 Cr (H2O)2&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Cr1B3O8H4&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="TestFormula.test_invalid">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_formula.html#orsopy.slddb.tests.test_formula.TestFormula.test_invalid">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;(Fe(BO)2)3&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;(FeBO23&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestFormula.test_merge">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_formula.html#orsopy.slddb.tests.test_formula.TestFormula.test_merge">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_merge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;NaCl&quot;</span><span class="p">)</span>
+        <span class="n">f2</span> <span class="o">=</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;NaCl&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+
+        <span class="n">f2</span> <span class="o">=</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Na1Cl1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+        <span class="n">f2</span> <span class="o">=</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Na0.5Na0.5Cl1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+
+        <span class="n">f2</span> <span class="o">=</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Na0.5Cl1Na0.5&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+
+        <span class="n">f2</span> <span class="o">=</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;ClNa1.0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+
+        <span class="n">f1</span> <span class="o">=</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;H2O&quot;</span><span class="p">)</span>
+        <span class="n">f2</span> <span class="o">=</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;OH2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestFormula.test_strparse">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_formula.html#orsopy.slddb.tests.test_formula.TestFormula.test_strparse">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_strparse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;NaCl&quot;</span><span class="p">))</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Na1Cl1.0&quot;</span><span class="p">))</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Na0.5Cl2&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="TestFormula.test_contains">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_formula.html#orsopy.slddb.tests.test_formula.TestFormula.test_contains">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_contains</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;Cr&quot;</span> <span class="ow">in</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Cr2O3&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Fe2O3&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Fe2O3&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="TestFormula.test_ambigous">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_formula.html#orsopy.slddb.tests.test_formula.TestFormula.test_ambigous">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_ambigous</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;CLa&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;C1La1&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;YB&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;y1b1&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;PTa&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;P1Ta1&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;BEu&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;b1eu1&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;SBEu&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;s1b1eu1&quot;</span><span class="p">))</span>
+        <span class="c1"># lower case without numbers is not recommended, as it is not unique in many cases</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;beu&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;be1u1&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;BEu&quot;</span><span class="p">),</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;b1eu1&quot;</span><span class="p">))</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

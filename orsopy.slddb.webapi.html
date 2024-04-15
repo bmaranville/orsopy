@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.slddb.webapi module &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=6efca38a"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">orsopy.slddb.webapi module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/orsopy.slddb.webapi.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-orsopy.slddb.webapi">
+<span id="orsopy-slddb-webapi-module"></span><h1>orsopy.slddb.webapi module<a class="headerlink" href="#module-orsopy.slddb.webapi" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="orsopy.slddb.webapi.SLD_API">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orsopy.slddb.webapi.</span></span><span class="sig-name descname"><span class="pre">SLD_API</span></span><a class="reference internal" href="_modules/orsopy/slddb/webapi.html#SLD_API"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.webapi.SLD_API" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Python API for users of the SLDDB data.</p>
+<p>Allows to query the online database for materials, calculate SLDs and add new materials.
+If connection to the server fails, a local copy of the database is used, instead.</p>
+<dl>
+<dt>Usage:</dt><dd><p>from orsopy.slddb import api
+res=api.search(formula=”Fe2O3”)
+res[0][‘density’] =&gt; ….</p>
+<p>m=api.material(res[0][‘ID’]) # retrieve all data for the given material, see Material class.
+sldn=m.rho_n # get nuclear neutron SLD (complex number)
+sldm=m.rho_m # get magnetic neutron SLD (real number)
+sldx=m.f_of_E(E=8.047823) # get x-ray SLD (complex number) for given energy, default is Cu-Kalpha</p>
+<p># custom material just for SLD calculation, requires either dens, fu_volume, rho_n or xsld+xE
+m=api.custom(formula=’Au’, dens=19.3)</p>
+</dd>
+<dt>Units of results/queries:</dt><dd><p>density: g/cm³
+roh_n: Å^{-2}
+roh_m: Å^{-2}
+sldx: Å^{-2}
+fu_volume: Å³</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.webapi.SLD_API.db_suburl">
+<span class="sig-name descname"><span class="pre">db_suburl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'download_db'</span></em><a class="headerlink" href="#orsopy.slddb.webapi.SLD_API.db_suburl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.webapi.SLD_API.max_age">
+<span class="sig-name descname"><span class="pre">max_age</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#orsopy.slddb.webapi.SLD_API.max_age" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="orsopy.slddb.webapi.SLD_API.db">
+<span class="sig-name descname"><span class="pre">db</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="orsopy.slddb.database.html#orsopy.slddb.database.SLDDB" title="orsopy.slddb.database.SLDDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SLDDB</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#orsopy.slddb.webapi.SLD_API.db" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.webapi.SLD_API.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/webapi.html#SLD_API.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.webapi.SLD_API.check" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.webapi.SLD_API.download_db">
+<span class="sig-name descname"><span class="pre">download_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/webapi.html#SLD_API.download_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.webapi.SLD_API.download_db" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.webapi.SLD_API.webquery">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">webquery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qdict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/webapi.html#SLD_API.webquery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.webapi.SLD_API.webquery" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.webapi.SLD_API.localquery">
+<span class="sig-name descname"><span class="pre">localquery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qdict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/webapi.html#SLD_API.localquery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.webapi.SLD_API.localquery" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.webapi.SLD_API.localmaterial">
+<span class="sig-name descname"><span class="pre">localmaterial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ID</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/webapi.html#SLD_API.localmaterial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.webapi.SLD_API.localmaterial" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.webapi.SLD_API.search">
+<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">opts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/webapi.html#SLD_API.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.webapi.SLD_API.search" title="Link to this definition"></a></dt>
+<dd><p>Search for a particular material using a combination of provided search keys.</p>
+<dl class="simple">
+<dt>Examples:</dt><dd><p>api.search(formula=”Fe2O3”)
+api.search(density=5.242)
+api.search(name=’iron’)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.webapi.SLD_API.material">
+<span class="sig-name descname"><span class="pre">material</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ID</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/webapi.html#SLD_API.material"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.webapi.SLD_API.material" title="Link to this definition"></a></dt>
+<dd><p>Returns the material object for a certain database entry specified by its unique ID.</p>
+<dl class="simple">
+<dt>Example:</dt><dd><p>res=api.search(formula=’Fe’)
+material=api.material(res[0][‘ID’])
+print(material.dens, material.rho_n, material.f_of_E(8.0))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.webapi.SLD_API.custom">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">custom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formula</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fu_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xsld</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xE</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/webapi.html#SLD_API.custom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.webapi.SLD_API.custom" title="Link to this definition"></a></dt>
+<dd><p>Returns the material object for a certain material as specified by caller.</p>
+<dl class="simple">
+<dt>Example:</dt><dd><p>res=api.custom(‘Fe’, dens=7.8)
+print(material.dens, material.rho_n, material.f_of_E(8.0))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orsopy.slddb.webapi.SLD_API.bio_blender">
+<span class="sig-name descname"><span class="pre">bio_blender</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">molecule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'protein'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/orsopy/slddb/webapi.html#SLD_API.bio_blender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#orsopy.slddb.webapi.SLD_API.bio_blender" title="Link to this definition"></a></dt>
+<dd><p>Get material for protein, DNA or RNA. Provide a letter sequence and molecule type (‘protein’, ‘dna’, ‘rna’).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

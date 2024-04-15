@@ -1,0 +1,7 @@
+writetest module
+================
+
+.. automodule:: writetest
+   :members:
+   :undoc-members:
+   :show-inheritance:

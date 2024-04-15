@@ -1,0 +1,7 @@
+orsopy.fileio.tests.test\_data\_source module
+=============================================
+
+.. automodule:: orsopy.fileio.tests.test_data_source
+   :members:
+   :undoc-members:
+   :show-inheritance:

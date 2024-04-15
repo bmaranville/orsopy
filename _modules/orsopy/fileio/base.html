@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.fileio.base &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">orsopy.fileio.base</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for orsopy.fileio.base</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Implementation of the base classes for the ORSO header.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">isclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">yaml.constructor</span>
+
+<span class="c1"># typing stuff introduced in python 3.8</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">get_args</span><span class="p">,</span> <span class="n">get_origin</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.typing_backport</span> <span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">get_args</span><span class="p">,</span> <span class="n">get_origin</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">MISSING</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">fields</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+
+<span class="k">def</span> <span class="nf">_noop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="n">JSON_MIMETYPE</span> <span class="o">=</span> <span class="s2">&quot;application/json&quot;</span>
+
+<span class="n">yaml</span><span class="o">.</span><span class="n">emitter</span><span class="o">.</span><span class="n">Emitter</span><span class="o">.</span><span class="n">process_tag</span> <span class="o">=</span> <span class="n">_noop</span>
+
+<span class="c1"># make sure that datetime strings get loaded as str not datetime instances</span>
+<span class="n">yaml</span><span class="o">.</span><span class="n">constructor</span><span class="o">.</span><span class="n">SafeConstructor</span><span class="o">.</span><span class="n">yaml_constructors</span><span class="p">[</span>
+    <span class="s2">&quot;tag:yaml.org,2002:timestamp&quot;</span>
+<span class="p">]</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">constructor</span><span class="o">.</span><span class="n">SafeConstructor</span><span class="o">.</span><span class="n">yaml_constructors</span><span class="p">[</span><span class="s2">&quot;tag:yaml.org,2002:str&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="ORSOResolveError">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.ORSOResolveError">[docs]</a>
+<span class="k">class</span> <span class="nc">ORSOResolveError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="ORSOSchemaWarning">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.ORSOSchemaWarning">[docs]</a>
+<span class="k">class</span> <span class="nc">ORSOSchemaWarning</span><span class="p">(</span><span class="ne">RuntimeWarning</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="Header">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.Header">[docs]</a>
+<span class="k">class</span> <span class="nc">Header</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The super class for all the items in the orso module.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_orso_optionals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_subclass_dict_</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For each subclass of Header, collect optional arguments in</span>
+<span class="sd">        _orso_optionals to prevent writing to yaml if empty.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_orso_optionals</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;comment&quot;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__bases__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">Header</span><span class="p">:</span>
+            <span class="c1"># Having subclasses of a dataclass can lead to issues,</span>
+            <span class="c1"># if they use optional arguments, currently just forbid subclassing.</span>
+            <span class="c1"># Could be worked around by transferring parent attributes to child</span>
+            <span class="c1"># and setting the base to Header.</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;ORSO Header does not support subclasses at the moment&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="n">ftype</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__annotations__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="ow">in</span> <span class="n">get_args</span><span class="p">(</span><span class="n">ftype</span><span class="p">):</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_orso_optionals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="c1"># add an optional comment argument to all Header derived classes</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">[</span><span class="s2">&quot;comment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># register class for NeXus reconstruction</span>
+        <span class="n">Header</span><span class="o">.</span><span class="n">_subclass_dict_</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span>
+
+<div class="viewcode-block" id="Header.from_dict">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.Header.from_dict">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create class from dictionary as is returned from yaml file reader.</span>
+
+<span class="sd">        If user-supplied attributes are provided, they are not passed to the</span>
+<span class="sd">        constructor but applied after instance generation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">construct_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">construct_fields</span> <span class="o">=</span> <span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">field_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">fi</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="n">construct_fields</span><span class="p">]</span>
+        <span class="n">user_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">field_keys</span><span class="p">:</span>
+                <span class="n">ftype</span> <span class="o">=</span> <span class="n">construct_fields</span><span class="p">[</span><span class="n">field_keys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span><span class="o">.</span><span class="n">type</span>
+                <span class="c1"># convert dictionary to Header derived class if possible</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ftype</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">ftype</span><span class="p">,</span> <span class="n">Header</span><span class="p">):</span>
+                    <span class="c1"># the field requires a ORSO Header type</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">construct_fields</span><span class="p">[</span><span class="n">field_keys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">construct_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">user_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">construct_dict</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">user_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure Header types are correct.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">fld</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fld</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">type_attr</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">type_attr</span> <span class="ow">is</span> <span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">updt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_type</span><span class="p">(</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;An exception occurred when trying to resolve value &#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">:&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="k">raise</span> <span class="n">ORSOResolveError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">if</span> <span class="n">updt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># convert to dataclass instance</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fld</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">updt</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;No suitable conversion found for </span><span class="si">{</span><span class="n">fld</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2"> with value </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">, &quot;</span>
+                        <span class="s2">&quot;setting attribute with raw value from ORSO file&quot;</span><span class="p">,</span>
+                        <span class="n">ORSOSchemaWarning</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fld</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+                    <span class="c1"># raise ValueError(f&quot;No suitable conversion found for {fld.type} with value {attr}&quot;)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_unit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">user_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">out_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">out_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">out_dict</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_resolve_type</span><span class="p">(</span><span class="n">hint</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function (recursively for :py:class:`Union` and</span>
+<span class="sd">        :py:class`Optional` objects) populates different attributes,</span>
+<span class="sd">        including constructing :py:class:`Header` object. Once the given</span>
+<span class="sd">        object is created it is returned. If it is not possible to</span>
+<span class="sd">        determine the correct object type :code:`None` is returned.</span>
+
+<span class="sd">        :param hint: The type of the given field.</span>
+<span class="sd">        :param item: An unresolved item to populate attribute.</span>
+
+<span class="sd">        :return: Correctly resolved object with required type for orso</span>
+<span class="sd">            compatibility.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">hint</span> <span class="ow">is</span> <span class="n">Any</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">item</span>
+        <span class="k">elif</span> <span class="n">isclass</span><span class="p">(</span><span class="n">hint</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">hint</span><span class="p">,</span> <span class="s2">&quot;__origin__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Literal</span><span class="p">]:</span>
+            <span class="c1"># ===== simple type that we can work with, no Union or List/Dict ====</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">hint</span><span class="p">):</span>
+                <span class="c1"># value already has the desired type, just return it</span>
+                <span class="k">return</span> <span class="n">item</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">hint</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="c1"># convert str to datetime</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>  <span class="c1"># python 3.6</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="c1"># remove possible time zone string</span>
+                        <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="c1"># go through different supported formats</span>
+                        <span class="k">if</span> <span class="s2">&quot;T&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="c1"># string wasn&#39;t ISO8601 format</span>
+                        <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="c1"># string wasn&#39;t ISO8601 format</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">hint</span><span class="p">,</span> <span class="n">Header</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="c1"># convert to ORSO Header instance</span>
+                <span class="n">attribs</span> <span class="o">=</span> <span class="n">hint</span><span class="o">.</span><span class="vm">__annotations__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="n">realised_items</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">attribs</span><span class="p">}</span>
+                <span class="c1"># orphan_items are extra dictionary entries that don&#39;t correspond to</span>
+                <span class="c1"># arguments of a Header instance. They can&#39;t be used to construct</span>
+                <span class="c1"># a header instance, so remove them from the dict of arguments.</span>
+                <span class="c1"># This enables back compatibility of Orso files as attributes</span>
+                <span class="c1"># present in later versions will still be loadable by earlier code.</span>
+                <span class="n">orphan_items</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attribs</span><span class="p">}</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">hint</span><span class="p">(</span><span class="o">**</span><span class="n">realised_items</span><span class="p">)</span>
+                    <span class="c1"># keep the orphan items with the newly constructed Header</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">orphan_items</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">it</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">value</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># try to convert to type</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">hint</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># ======= the hint is a combined type (Union/List/Dict etc.) ========</span>
+            <span class="n">hbase</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">hint</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">hbase</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="c1"># type hint is iterable either list or tuple with hint for items</span>
+                <span class="n">t0</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">hint</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">hbase</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                        <span class="c1"># convert all items to hint type</span>
+                        <span class="k">return</span> <span class="nb">list</span><span class="p">([</span><span class="n">Header</span><span class="o">.</span><span class="n">_resolve_type</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">item</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">arg_list</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">hint</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg_list</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                                <span class="s2">&quot;The Schema expects </span><span class="si">%i</span><span class="s2"> items, </span><span class="si">%i</span><span class="s2"> given&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arg_list</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">)),</span> <span class="n">ORSOSchemaWarning</span>
+                            <span class="p">)</span>
+                        <span class="c1"># tuple hint includes a fixed set of types (e.g. (int, int, str)), convert to those</span>
+                        <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">Header</span><span class="o">.</span><span class="n">_resolve_type</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">ti</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">arg_list</span><span class="p">,</span> <span class="n">item</span><span class="p">)])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># if the value is not an iterable, assume this is a single entry within the list/tuple</span>
+                    <span class="c1"># TODO: Is this a good idea? Maybe we should raise a warning in this case.</span>
+                    <span class="k">return</span> <span class="n">hbase</span><span class="p">([</span><span class="n">Header</span><span class="o">.</span><span class="n">_resolve_type</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">item</span><span class="p">)])</span>
+            <span class="k">elif</span> <span class="n">hbase</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+                <span class="c1"># Dictionary type hint. Does only make sense if the key/value types are defined.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">key_type</span><span class="p">,</span> <span class="n">value_type</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">hint</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                        <span class="s2">&quot;The evaluation of type hints requires key/value definition for Dict, &quot;</span>
+                        <span class="s2">&quot;if you want to use unspecified dictionaries use dict instead of Dict.&quot;</span><span class="p">,</span>
+                        <span class="n">ORSOSchemaWarning</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># convert all key/value pairs in the data to the hinted type.</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="n">Header</span><span class="o">.</span><span class="n">_resolve_type</span><span class="p">(</span><span class="n">key_type</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                        <span class="n">res</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">Header</span><span class="o">.</span><span class="n">_resolve_type</span><span class="p">(</span><span class="n">value_type</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">res</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="n">hbase</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">]:</span>
+                <span class="c1"># Case of combined type hints.</span>
+                <span class="c1"># Look for given value type first,</span>
+                <span class="c1"># otherwise try to convert to each type and return the first that fits.</span>
+                <span class="n">subtypes</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">hint</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="n">subtypes</span><span class="p">:</span>
+                    <span class="c1"># check if the item is in the list of allowed</span>
+                    <span class="c1"># subtypes</span>
+                    <span class="k">return</span> <span class="n">item</span>
+                <span class="k">for</span> <span class="n">subt</span> <span class="ow">in</span> <span class="n">subtypes</span><span class="p">:</span>
+                    <span class="c1"># if it&#39;s not, then try to resolve its type.</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="n">Header</span><span class="o">.</span><span class="n">_resolve_type</span><span class="p">(</span><span class="n">subt</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="c1"># This type conversion worked, return the result.</span>
+                        <span class="k">return</span> <span class="n">res</span>
+            <span class="k">elif</span> <span class="n">hbase</span> <span class="ow">is</span> <span class="n">Literal</span><span class="p">:</span>
+                <span class="c1"># Special case of a string Literal, which defines a list of valid strings.</span>
+                <span class="c1"># TODO: Should we first convert the value to a string?</span>
+                <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">get_args</span><span class="p">(</span><span class="n">hint</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">item</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Has to be one of </span><span class="si">{</span><span class="n">get_args</span><span class="p">(</span><span class="n">hint</span><span class="p">)</span><span class="si">}</span><span class="s2"> got </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ORSOSchemaWarning</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Header.empty">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.Header.empty">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Header&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create an empty instance of this item containing</span>
+<span class="sd">        all non-option attributes as :code:`None`.</span>
+
+<span class="sd">        :return: Empty class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">attr_items</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">fld</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="ow">in</span> <span class="n">get_args</span><span class="p">(</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">):</span>
+                <span class="c1"># skip optional arguments</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="n">fld</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MISSING</span><span class="p">:</span>
+                <span class="c1"># the field has a default, use it instead None/empty</span>
+                <span class="n">attr_items</span><span class="p">[</span><span class="n">fld</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">fld</span><span class="o">.</span><span class="n">default</span>
+            <span class="k">elif</span> <span class="n">isclass</span><span class="p">(</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">Header</span><span class="p">):</span>
+                <span class="n">attr_items</span><span class="p">[</span><span class="n">fld</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="n">get_origin</span><span class="p">(</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Union</span>
+                <span class="ow">and</span> <span class="n">isclass</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Header</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">attr_items</span><span class="p">[</span><span class="n">fld</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="n">get_origin</span><span class="p">(</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span>
+                <span class="ow">and</span> <span class="n">isclass</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Header</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">attr_items</span><span class="p">[</span><span class="n">fld</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_args</span><span class="p">(</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">()]</span>
+            <span class="k">elif</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">fld</span><span class="o">.</span><span class="n">type</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="n">attr_items</span><span class="p">[</span><span class="n">fld</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">attr_items</span><span class="p">[</span><span class="n">fld</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">attr_items</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Header.asdict">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.Header.asdict">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">asdict</span><span class="p">(</span><span class="n">header</span><span class="p">:</span> <span class="s2">&quot;Header&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Static method for :py:func:`to_dict`.</span>
+
+<span class="sd">        :param header: Object to convert to dictionary.</span>
+
+<span class="sd">        :return: Dictionary result.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">header</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Header.to_dict">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.Header.to_dict">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Produces a clean dictionary of the Header object, removing</span>
+<span class="sd">        any optional attributes with the value :code:`None`.</span>
+
+<span class="sd">        :return: Cleaned dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orso_optionals</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;to_dict&quot;</span><span class="p">):</span>
+                <span class="n">out_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="n">cleaned_list</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="s2">&quot;to_dict&quot;</span><span class="p">):</span>
+                        <span class="n">cleaned_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">cleaned_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                <span class="n">out_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)(</span><span class="n">cleaned_list</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># here _todict converts objects that aren&#39;t derived from Header</span>
+                <span class="c1"># and therefore don&#39;t have to_dict methods.</span>
+                <span class="n">out_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">_todict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out_dict</span></div>
+
+
+<div class="viewcode-block" id="Header.to_yaml">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.Header.to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the yaml string for the Header item</span>
+
+<span class="sd">        :return: Yaml string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Dumper</span><span class="o">=</span><span class="n">OrsoDumper</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_to_object_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orso_optionals</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">output</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">output</span>
+
+<div class="viewcode-block" id="Header.yaml_representer">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.Header.yaml_representer">[docs]</a>
+    <span class="k">def</span> <span class="nf">yaml_representer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dumper</span><span class="p">:</span> <span class="n">yaml</span><span class="o">.</span><span class="n">Dumper</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_object_dict</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">dumper</span><span class="o">.</span><span class="n">represent_mapping</span><span class="p">(</span><span class="n">dumper</span><span class="o">.</span><span class="n">DEFAULT_MAPPING_TAG</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">flow_style</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Header.yaml_representer_compact">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.Header.yaml_representer_compact">[docs]</a>
+    <span class="k">def</span> <span class="nf">yaml_representer_compact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dumper</span><span class="p">:</span> <span class="n">yaml</span><span class="o">.</span><span class="n">Dumper</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_object_dict</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">dumper</span><span class="o">.</span><span class="n">represent_mapping</span><span class="p">(</span><span class="n">dumper</span><span class="o">.</span><span class="n">DEFAULT_MAPPING_TAG</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">flow_style</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Header.to_nexus">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.Header.to_nexus">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_nexus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Produces an HDF5 representation of the Header object, removing</span>
+<span class="sd">        any optional attributes with the value :code:`None`.</span>
+
+<span class="sd">        :return: HDF5 object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">classname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="kn">import</span> <span class="nn">h5py</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Group</span><span class="p">)</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">classname</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;ORSO_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">classname</span>
+
+        <span class="k">for</span> <span class="n">child_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">child_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">child_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orso_optionals</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Header</span><span class="p">):</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">to_nexus</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">group</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">child_name</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="n">child_group</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">child_name</span><span class="p">)</span>
+                <span class="n">child_group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;sequence&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                    <span class="c1"># use the &#39;name&#39; attribute of children if it exists, else index:</span>
+                    <span class="n">sub_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Header</span><span class="p">):</span>
+                        <span class="n">item_out</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">to_nexus</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">child_group</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">sub_name</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">t_value</span> <span class="o">=</span> <span class="n">nexus_value_converter</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">t_value</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+                            <span class="n">item_out</span> <span class="o">=</span> <span class="n">child_group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">sub_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">t_value</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">t_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="c1"># special handling for null datasets: no data</span>
+                            <span class="n">item_out</span> <span class="o">=</span> <span class="n">child_group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">sub_name</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t_value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                            <span class="n">item_out</span> <span class="o">=</span> <span class="n">child_group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">sub_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">t_value</span><span class="p">))</span>
+                            <span class="n">item_out</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;mimetype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">JSON_MIMETYPE</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># raise ValueError(f&quot;unserializable attribute found: {child_name}[{index}] = {t_value}&quot;)</span>
+                            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unserializable attribute found: </span><span class="si">{</span><span class="n">child_name</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">] = </span><span class="si">{</span><span class="n">t_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                            <span class="k">continue</span>
+                    <span class="n">item_out</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;sequence_index&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># here _todict converts objects that aren&#39;t derived from Header</span>
+                <span class="c1"># and therefore don&#39;t have to_dict methods.</span>
+                <span class="n">t_value</span> <span class="o">=</span> <span class="n">nexus_value_converter</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">t_value</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+                    <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">child_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">t_value</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">t_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">child_name</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t_value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">dset</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">child_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">t_value</span><span class="p">))</span>
+                    <span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;mimetype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">JSON_MIMETYPE</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unserializable attribute found: </span><span class="si">{</span><span class="n">child_name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">t_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">group</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_unit</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the unit is valid, in future this could include</span>
+<span class="sd">        recommendations.</span>
+
+<span class="sd">        :param unit: Value to check if it is a value unit.</span>
+
+<span class="sd">        :raises: ValueError is the unit is not ASCII text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># raise UnicodeError if not ascii</span>
+            <span class="n">unit</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Representation that does not show empty arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(&quot;</span>
+        <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">fi</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orso_optionals</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fi</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># ignore empty optional arguments</span>
+                <span class="k">continue</span>
+            <span class="n">out</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fi</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">fi</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">!r}</span><span class="s2">, &quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span> <span class="nf">_staggered_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a string representation distributed over multiple lines</span>
+<span class="sd">        to improve readability.</span>
+
+<span class="sd">        To use in a subclass, the __repr__ method has to be replaced with this one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">fi</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orso_optionals</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fi</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># ignore empty optional arguments</span>
+                <span class="k">continue</span>
+            <span class="n">nlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fi</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">ftxt</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fi</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="n">ftxt</span> <span class="o">=</span> <span class="n">ftxt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">slen</span> <span class="o">+</span> <span class="n">nlen</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">out</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">slen</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fi</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">ftxt</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">out</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">slen</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+
+<div class="viewcode-block" id="OrsoDumper">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.OrsoDumper">[docs]</a>
+<span class="k">class</span> <span class="nc">OrsoDumper</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeDumper</span><span class="p">):</span>
+<div class="viewcode-block" id="OrsoDumper.represent_data">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.OrsoDumper.represent_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">represent_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;yaml_representer&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">yaml_representer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">represent_scalar</span><span class="p">(</span><span class="s2">&quot;tag:yaml.org,2002:timestamp&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">):</span>
+            <span class="c1"># If data is a numpy scalar, convert to a python object</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">represent_data</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">represent_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="n">unit_registry</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="ErrorValue">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.ErrorValue">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ErrorValue</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Information about errors on a value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error_value</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">error_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;uncertainty&quot;</span><span class="p">,</span> <span class="s2">&quot;resolution&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">value_is</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">distribution</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;gaussian&quot;</span><span class="p">,</span> <span class="s2">&quot;triangular&quot;</span><span class="p">,</span> <span class="s2">&quot;uniform&quot;</span><span class="p">,</span> <span class="s2">&quot;lorentzian&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">yaml_representer</span> <span class="o">=</span> <span class="n">Header</span><span class="o">.</span><span class="n">yaml_representer_compact</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return value converted to standard deviation.</span>
+
+<span class="sd">        The conversion factors can be found in common statistics and experimental physics text books or derived</span>
+<span class="sd">        manually solving the variance definition integral.</span>
+<span class="sd">        (e.g. Dekking, Michel (2005).</span>
+<span class="sd">        A modern introduction to probability and statistics : understanding why and how.</span>
+<span class="sd">        Springer, London, UK:)</span>
+<span class="sd">        Values and some references available on Wikipedia, too.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_is</span> <span class="o">==</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">sqrt</span>
+
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_value</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;gaussian&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+                <span class="c1"># Solving for the gaussian function = 0.5 yields:</span>
+                <span class="k">return</span> <span class="n">value</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)))</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span> <span class="o">==</span> <span class="s2">&quot;triangular&quot;</span><span class="p">:</span>
+                <span class="c1"># See solution of integral e.g. https://math.stackexchange.com/questions/4271314/</span>
+                <span class="c1"># what-is-the-proof-for-variance-of-triangular-distribution/4273147#4273147</span>
+                <span class="c1"># setting c=0 and a=b=FWHM for the symmetric triangle around 0.</span>
+                <span class="k">return</span> <span class="n">value</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">6.0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span> <span class="o">==</span> <span class="s2">&quot;uniform&quot;</span><span class="p">:</span>
+                <span class="c1"># Variance is just the integral of x² from -0.5*FWHM to 0.5*FWHM =&gt; 1/12.</span>
+                <span class="k">return</span> <span class="n">value</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">12.0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span> <span class="o">==</span> <span class="s2">&quot;lorentzian&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Lorentzian distribution does not have a sigma value&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown distribution </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">distribution</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Value is already sigma</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_value</span></div>
+
+
+
+<div class="viewcode-block" id="Value">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.Value">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Value</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A value or list of values with an optional unit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">magnitude</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;SI unit string&quot;</span><span class="p">})</span>
+    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ErrorValue</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">offset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The offset applied to a value (e.g. motor) to retrieve the reported (corrected) magnitude&quot;</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="n">yaml_representer</span> <span class="o">=</span> <span class="n">Header</span><span class="o">.</span><span class="n">yaml_representer_compact</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make representation more readability by removing names of default arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;magnitude=&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;unit=&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span>
+
+<div class="viewcode-block" id="Value.as_unit">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.Value.as_unit">[docs]</a>
+    <span class="k">def</span> <span class="nf">as_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_unit</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the value as converted to the given unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">output_unit</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span>
+
+        <span class="k">global</span> <span class="n">unit_registry</span>
+        <span class="k">if</span> <span class="n">unit_registry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">pint</span>
+
+            <span class="n">unit_registry</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+
+        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">*</span> <span class="n">unit_registry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ComplexValue">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.ComplexValue">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ComplexValue</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A value or list of values with an optional unit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">real</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">imag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;SI unit string&quot;</span><span class="p">})</span>
+    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ErrorValue</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">yaml_representer</span> <span class="o">=</span> <span class="n">Header</span><span class="o">.</span><span class="n">yaml_representer_compact</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make representation more readability by removing names of default arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;real=&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;imag=&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;unit=&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span>
+
+<div class="viewcode-block" id="ComplexValue.as_unit">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.ComplexValue.as_unit">[docs]</a>
+    <span class="k">def</span> <span class="nf">as_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_unit</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the complex value as converted to the given unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">imag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">real</span> <span class="o">+</span> <span class="mi">0</span><span class="n">j</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">real</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">imag</span>
+        <span class="k">if</span> <span class="n">output_unit</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span>
+
+        <span class="k">global</span> <span class="n">unit_registry</span>
+        <span class="k">if</span> <span class="n">unit_registry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">pint</span>
+
+            <span class="n">unit_registry</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+
+        <span class="n">val</span> <span class="o">=</span> <span class="n">value</span> <span class="o">*</span> <span class="n">unit_registry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ValueRange">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.ValueRange">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ValueRange</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A range or list of ranges with mins, maxs, and an optional unit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">min</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="nb">max</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;SI unit string&quot;</span><span class="p">})</span>
+    <span class="n">individual_magnitudes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Can list each individual value &quot;</span>
+            <span class="s2">&quot;that was present during the experiment, only for information.&quot;</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">offset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The offset applied to a value (e.g. motor) to retrieve the reported (corrected) min/max&quot;</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="n">yaml_representer</span> <span class="o">=</span> <span class="n">Header</span><span class="o">.</span><span class="n">yaml_representer_compact</span>
+
+<div class="viewcode-block" id="ValueRange.as_unit">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.ValueRange.as_unit">[docs]</a>
+    <span class="k">def</span> <span class="nf">as_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_unit</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a (min, max) tuple of values as converted to the given unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">output_unit</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
+
+        <span class="k">global</span> <span class="n">unit_registry</span>
+        <span class="k">if</span> <span class="n">unit_registry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">pint</span>
+
+            <span class="n">unit_registry</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+
+        <span class="n">vmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="o">*</span> <span class="n">unit_registry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="n">vmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="o">*</span> <span class="n">unit_registry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">vmin</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">vmax</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ValueVector">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.ValueVector">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ValueVector</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A vector or list of vectors with an optional unit.</span>
+<span class="sd">    For vectors relating to the sample, such as polarisation,</span>
+<span class="sd">    the follow definitions are used.</span>
+
+<span class="sd">    :param x: is defined as parallel to the radiation beam, positive going</span>
+<span class="sd">        with the beam direction.</span>
+<span class="sd">    :param y: is defined from the other two based on the right hand rule.</span>
+<span class="sd">    :param z: is defined as normal to the sample surface, positive direction</span>
+<span class="sd">        in scattering direction.</span>
+<span class="sd">    :param unit: SI unit string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">z</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;SI unit string&quot;</span><span class="p">})</span>
+    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ErrorValue</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">yaml_representer</span> <span class="o">=</span> <span class="n">Header</span><span class="o">.</span><span class="n">yaml_representer_compact</span>
+
+<div class="viewcode-block" id="ValueVector.as_unit">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.ValueVector.as_unit">[docs]</a>
+    <span class="k">def</span> <span class="nf">as_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_unit</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a (x, y, z) tuple of values as converted to the given unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">output_unit</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
+
+        <span class="k">global</span> <span class="n">unit_registry</span>
+        <span class="k">if</span> <span class="n">unit_registry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">pint</span>
+
+            <span class="n">unit_registry</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+
+        <span class="n">vx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">unit_registry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="n">vy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">unit_registry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="n">vz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">*</span> <span class="n">unit_registry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">vx</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">vy</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">vz</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">output_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AlternatingField">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.AlternatingField">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">AlternatingField</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A physical field with regular variations as AC magnetic field.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">amplitude</span><span class="p">:</span> <span class="n">Value</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">Value</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Value</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="Person">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.Person">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Information about a person, including name, affiliation(s), and contact</span>
+<span class="sd">    information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">affiliation</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">contact</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Contact (email) address&quot;</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="Column">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.Column">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Column</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Information about a data column.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;SI unit string&quot;</span><span class="p">})</span>
+    <span class="n">physical_quantity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A description of the physical meaning for this column. &quot;</span>
+            <span class="s2">&quot;For quantities defined by ORSO in header metadata the same name should be used.&quot;</span>
+            <span class="s2">&quot;(For example &#39;wavelength&#39; or &#39;incident_angle&#39; to indicate a column specifying &quot;</span>
+            <span class="s2">&quot;those quantities on a point-by-point basis.)&quot;</span>
+            <span class="s2">&quot;For canonical names of physical quantities see https://www.reflectometry.org/file_format/specification.&quot;</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="n">flag_is</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A list of items that a flag-value in this column stands for.&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">yaml_representer</span> <span class="o">=</span> <span class="n">Header</span><span class="o">.</span><span class="n">yaml_representer_compact</span></div>
+
+
+
+<div class="viewcode-block" id="ErrorColumn">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.ErrorColumn">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ErrorColumn</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Information about a data column.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error_of</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">error_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;uncertainty&quot;</span><span class="p">,</span> <span class="s2">&quot;resolution&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">value_is</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">distribution</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;gaussian&quot;</span><span class="p">,</span> <span class="s2">&quot;triangular&quot;</span><span class="p">,</span> <span class="s2">&quot;uniform&quot;</span><span class="p">,</span> <span class="s2">&quot;lorentzian&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">yaml_representer</span> <span class="o">=</span> <span class="n">Header</span><span class="o">.</span><span class="n">yaml_representer_compact</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A convenience property to allow programs to get a valid name attribute for any column.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;s</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">error_of</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">to_sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The multiplicative factor needed to convert a FWHM to sigma.</span>
+
+<span class="sd">        The conversion factors can be found in common statistics and experimental physics text books or derived</span>
+<span class="sd">        manually solving the variance definition integral.</span>
+<span class="sd">        (e.g. Dekking, Michel (2005).</span>
+<span class="sd">        A modern introduction to probability and statistics : understanding why and how.</span>
+<span class="sd">        Springer, London, UK:)</span>
+<span class="sd">        Values and some references available on Wikipedia, too.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_is</span> <span class="o">==</span> <span class="s2">&quot;FWHM&quot;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">sqrt</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;gaussian&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+                <span class="c1"># Solving for the gaussian function = 0.5 yields:</span>
+                <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)))</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span> <span class="o">==</span> <span class="s2">&quot;triangular&quot;</span><span class="p">:</span>
+                <span class="c1"># See solution of integral e.g. https://math.stackexchange.com/questions/4271314/</span>
+                <span class="c1"># what-is-the-proof-for-variance-of-triangular-distribution/4273147#4273147</span>
+                <span class="c1"># setting c=0 and a=b=FWHM for the symmetric triangle around 0.</span>
+                <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">6.0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span> <span class="o">==</span> <span class="s2">&quot;uniform&quot;</span><span class="p">:</span>
+                <span class="c1"># Variance is just the integral of x² from -0.5*FWHM to 0.5*FWHM =&gt; 1/12.</span>
+                <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">12.0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span> <span class="o">==</span> <span class="s2">&quot;lorentzian&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Lorentzian distribution does not have a sigma value&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown distribution </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">distribution</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Value is already sigma</span>
+            <span class="k">return</span> <span class="mf">1.0</span></div>
+
+
+
+<div class="viewcode-block" id="File">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.File">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A file with file path and a last modified timestamp.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">file</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Last modified timestamp. If it&#39;s not specified,&quot;</span>
+            <span class="s2">&quot; then an attempt will be made to check on the file&quot;</span>
+            <span class="s2">&quot; itself&quot;</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns a timestamp for file creation if not defined.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Header</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="NotOrsoCompatibleFileError">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.NotOrsoCompatibleFileError">[docs]</a>
+<span class="k">class</span> <span class="nc">NotOrsoCompatibleFileError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_read_header_data</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">validate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads the header and data contained within an ORSO file, parsing it into</span>
+<span class="sd">    json dictionaries and numerical arrays.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    :param file: File to read.</span>
+<span class="sd">    :param validate: Validates the file against the ORSO json schema.</span>
+<span class="sd">        Requires that the jsonschema package be installed.</span>
+
+<span class="sd">    :return: The tuple contains:</span>
+<span class="sd">        - First item is a list of json dicts containing the parsed yaml</span>
+<span class="sd">        header. This has to be processed further.</span>
+<span class="sd">        - Second item is a Python list containing numpy arrays holding the</span>
+<span class="sd">        reflectometry data in the file. It&#39;s contained in a list because</span>
+<span class="sd">        each of the datasets may have a different number of columns.</span>
+<span class="sd">        - Final item is the ORSO version string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">with</span> <span class="n">_possibly_open_file</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fi</span><span class="p">:</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># collection of the numerical arrays</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">_ds_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">first_dataset</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fi</span><span class="o">.</span><span class="n">readlines</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+                <span class="c1"># ignore empty lines</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                    <span class="n">_ds_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;# data_set&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">first_dataset</span><span class="p">:</span>
+                <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+                <span class="n">first_dataset</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;# data_set&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">first_dataset</span><span class="p">:</span>
+                <span class="c1"># a new dataset is starting. Complete the previous dataset&#39;s</span>
+                <span class="c1"># numerical array  and start collecting the numbers for this</span>
+                <span class="c1"># dataset</span>
+                <span class="n">_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_ds_lines</span><span class="p">])</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_d</span><span class="p">)</span>
+                <span class="n">_ds_lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="c1"># append &#39;---&#39; to signify the start of a new yaml document</span>
+                <span class="c1"># Subsequent datasets get parsed into a separate dictionary,</span>
+                <span class="c1"># which can be used to synthesise new datasets from the first.</span>
+                <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+        <span class="c1"># append the last numerical array</span>
+        <span class="n">_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_ds_lines</span><span class="p">])</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_d</span><span class="p">)</span>
+
+        <span class="n">yml</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+
+        <span class="c1"># first line of an ORSO file should have the magic string</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;^(# ORSO reflectivity data file \| ([0-9]+\.?[0-9]*|\.[0-9]+)&quot;</span>
+            <span class="sa">r</span><span class="s2">&quot; standard \| YAML encoding \| https://www\.reflectometry\.org/)$&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">NotOrsoCompatibleFileError</span><span class="p">(</span><span class="s2">&quot;First line does not appear to match that of an ORSO file&quot;</span><span class="p">)</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([0-9]+\.?[0-9]*|\.[0-9]+)+?&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">dcts</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load_all</span><span class="p">(</span><span class="n">yml</span><span class="p">)</span>
+
+        <span class="c1"># synthesise json dicts for each dataset from the first dataset, and</span>
+        <span class="c1"># updates to the yaml.</span>
+        <span class="n">first_dct</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">dcts</span><span class="p">)</span>
+
+        <span class="n">dct_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">_nested_update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">first_dct</span><span class="p">),</span> <span class="n">dct</span><span class="p">)</span> <span class="k">for</span> <span class="n">dct</span> <span class="ow">in</span> <span class="n">dcts</span><span class="p">]</span>
+        <span class="n">dct_list</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">first_dct</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
+        <span class="c1"># requires jsonschema be installed</span>
+        <span class="n">_validate_header_data</span><span class="p">(</span><span class="n">dct_list</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dct_list</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">version</span>
+
+
+<span class="k">def</span> <span class="nf">_validate_header_data</span><span class="p">(</span><span class="n">dct_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks whether a json dictionary corresponds to a valid ORSO header.</span>
+
+<span class="sd">    Obtain these dct_list by loading from _read_header_data first.</span>
+
+<span class="sd">    :param dct_list: Dicts corresponding to parsed yaml headers from the ORT file.</span>
+
+<span class="sd">    :raises ValueError: When the first four columns are not named correctly</span>
+<span class="sd">        (i.e. :code:`&#39;Qz&#39;`, :code:`&#39;R&#39;`, :code:`&#39;sR&#39;`, :code:`&#39;sQz&#39;`).</span>
+<span class="sd">    :raises ValueError: When the units for the :code:`&#39;Qz&#39;` column is not</span>
+<span class="sd">        :code:`&#39;1/angstrom&#39;`.</span>
+<span class="sd">    :raises ValueError: When the units for columns :code:`&#39;Qz&#39;` and</span>
+<span class="sd">        :code:`&#39;sQz&#39;` are not the same.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">jsonschema</span>
+
+    <span class="n">pth</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">schema_pth</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pth</span><span class="p">,</span> <span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="s2">&quot;refl_header.schema.json&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">schema_pth</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">dct</span> <span class="ow">in</span> <span class="n">dct_list</span><span class="p">:</span>
+        <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">_possibly_open_file</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Context manager for files.</span>
+
+<span class="sd">    :param f: If `f` is a file, then yield the file. If `f` is a str then</span>
+<span class="sd">        open the file and yield the newly opened file. On leaving this</span>
+<span class="sd">        context manager the file is closed, if it was opened by this</span>
+<span class="sd">        context manager (i.e. `f` was a string).</span>
+<span class="sd">    :param modes: An optional string that specifies the mode in which</span>
+<span class="sd">        the file is opened.</span>
+<span class="sd">    :yields: On leaving the context manager the file is closed, if it</span>
+<span class="sd">        was opened by this context manager.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">close_file</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">))</span> <span class="ow">or</span> <span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">f</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+        <span class="n">close_file</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">yield</span> <span class="n">g</span>
+    <span class="k">if</span> <span class="n">close_file</span><span class="p">:</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_todict</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">classkey</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recursively converts an object to a dict representation</span>
+<span class="sd">    https://stackoverflow.com/questions/1036409</span>
+<span class="sd">    Licenced under CC BY-SA 4.0</span>
+
+<span class="sd">    :param obj: Object to convert to dict representation.</span>
+<span class="sd">    :param classkey: Key to be assigned to class objects.</span>
+
+<span class="sd">    :return: Dictionary representation of object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">_todict</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">classkey</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;_ast&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_todict</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">_ast</span><span class="p">())</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">_todict</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">classkey</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__dict__&quot;</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">_todict</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">classkey</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">classkey</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__class__&quot;</span><span class="p">):</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">classkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+
+<div class="viewcode-block" id="json_datetime_trap">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.json_datetime_trap">[docs]</a>
+<span class="k">def</span> <span class="nf">json_datetime_trap</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+
+<div class="viewcode-block" id="enum_trap">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.enum_trap">[docs]</a>
+<span class="k">def</span> <span class="nf">enum_trap</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+
+<div class="viewcode-block" id="nexus_value_converter">
+<a class="viewcode-back" href="../../../orsopy.fileio.base.html#orsopy.fileio.nexus_value_converter">[docs]</a>
+<span class="k">def</span> <span class="nf">nexus_value_converter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">converter</span> <span class="ow">in</span> <span class="p">(</span><span class="n">json_datetime_trap</span><span class="p">,</span> <span class="n">enum_trap</span><span class="p">):</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">converter</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_nested_update</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">u</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Nested dictionary update.</span>
+
+<span class="sd">    :param d: Dictionary to be updated.</span>
+<span class="sd">    :param u: Dictionary where updates should come from.</span>
+
+<span class="sd">    :return: Updated dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">_nested_update</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">v</span><span class="p">)</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">d</span>
+
+
+<span class="k">def</span> <span class="nf">_dict_diff</span><span class="p">(</span><span class="n">old</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recursive find differences between two dictionaries.</span>
+
+<span class="sd">    :param old: Original dictionary.</span>
+<span class="sd">    :param new: New dictionary to find differences in.</span>
+
+<span class="sd">    :return: Dictionary containing values present in :py:attr:`new`</span>
+<span class="sd">        that are not in :py:attr:`old`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">new</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">old</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+                <span class="n">diff</span> <span class="o">=</span> <span class="n">_dict_diff</span><span class="p">(</span><span class="n">old</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">diff</span> <span class="o">==</span> <span class="p">{}:</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">diff</span>
+            <span class="k">elif</span> <span class="n">old</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ki</span> <span class="k">for</span> <span class="n">ki</span> <span class="ow">in</span> <span class="n">old</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">ki</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new</span><span class="p">]:</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">out</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

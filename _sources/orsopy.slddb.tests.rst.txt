@@ -1,0 +1,24 @@
+orsopy.slddb.tests package
+==========================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   orsopy.slddb.tests.test_converters
+   orsopy.slddb.tests.test_dbcreation
+   orsopy.slddb.tests.test_dbmaterial
+   orsopy.slddb.tests.test_elements
+   orsopy.slddb.tests.test_formula
+   orsopy.slddb.tests.test_material
+   orsopy.slddb.tests.test_webapi
+
+Module contents
+---------------
+
+.. automodule:: orsopy.slddb.tests
+   :members:
+   :undoc-members:
+   :show-inheritance:

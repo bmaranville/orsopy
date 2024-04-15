@@ -1,0 +1,7 @@
+orsopy.fileio.tests.test\_reduction module
+==========================================
+
+.. automodule:: orsopy.fileio.tests.test_reduction
+   :members:
+   :undoc-members:
+   :show-inheritance:

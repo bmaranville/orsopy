@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.fileio.tests.test_reduction &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">orsopy.fileio.tests.test_reduction</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for orsopy.fileio.tests.test_reduction</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tests for fileio.reduction module</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">orsopy.fileio</span> <span class="kn">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">reduction</span>
+
+
+<div class="viewcode-block" id="TestSoftware">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_reduction.html#orsopy.fileio.tests.test_reduction.TestSoftware">[docs]</a>
+<span class="k">class</span> <span class="nc">TestSoftware</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tests for the Software class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestSoftware.test_creation">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_reduction.html#orsopy.fileio.tests.test_reduction.TestSoftware.test_creation">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of object with all arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">reduction</span><span class="o">.</span><span class="n">Software</span><span class="p">(</span><span class="s2">&quot;Reducer&quot;</span><span class="p">,</span> <span class="s2">&quot;1.2.3&quot;</span><span class="p">,</span> <span class="s2">&quot;Ubuntu-20.04&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Reducer&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">&quot;1.2.3&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;Ubuntu-20.04&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestSoftware.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_reduction.html#orsopy.fileio.tests.test_reduction.TestSoftware.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">reduction</span><span class="o">.</span><span class="n">Software</span><span class="p">(</span><span class="s2">&quot;Reducer&quot;</span><span class="p">,</span> <span class="s2">&quot;1.2.3&quot;</span><span class="p">,</span> <span class="s2">&quot;Ubuntu-20.04&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{name: Reducer, version: 1.2.3, platform: Ubuntu-20.04}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestSoftware.test_no_name_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_reduction.html#orsopy.fileio.tests.test_reduction.TestSoftware.test_no_name_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_no_name_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform to yaml with no name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">reduction</span><span class="o">.</span><span class="n">Software</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;WindowsXP&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;{name: null, version: 1.0.0, platform: WindowsXP}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestReduction">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_reduction.html#orsopy.fileio.tests.test_reduction.TestReduction">[docs]</a>
+<span class="k">class</span> <span class="nc">TestReduction</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tests for the Reduction class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestReduction.test_creation">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_reduction.html#orsopy.fileio.tests.test_reduction.TestReduction.test_creation">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creation of an reduction class with minimal options.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">reduction</span><span class="o">.</span><span class="n">Reduction</span><span class="p">(</span>
+            <span class="n">reduction</span><span class="o">.</span><span class="n">Software</span><span class="p">(</span><span class="s2">&quot;Reducer&quot;</span><span class="p">,</span> <span class="s2">&quot;1.2.3&quot;</span><span class="p">,</span> <span class="s2">&quot;Ubuntu-20.04&quot;</span><span class="p">),</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;A Person&quot;</span><span class="p">,</span> <span class="s2">&quot;University&quot;</span><span class="p">),</span>
+            <span class="p">[</span><span class="s2">&quot;footprint doi&quot;</span><span class="p">,</span> <span class="s2">&quot;background&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">software</span> <span class="o">==</span> <span class="n">reduction</span><span class="o">.</span><span class="n">Software</span><span class="p">(</span><span class="s2">&quot;Reducer&quot;</span><span class="p">,</span> <span class="s2">&quot;1.2.3&quot;</span><span class="p">,</span> <span class="s2">&quot;Ubuntu-20.04&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">==</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">creator</span> <span class="o">==</span> <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;A Person&quot;</span><span class="p">,</span> <span class="s2">&quot;University&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">corrections</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;footprint doi&quot;</span><span class="p">,</span> <span class="s2">&quot;background&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TestReduction.test_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_reduction.html#orsopy.fileio.tests.test_reduction.TestReduction.test_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform minimal options to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">reduction</span><span class="o">.</span><span class="n">Reduction</span><span class="p">(</span>
+            <span class="n">reduction</span><span class="o">.</span><span class="n">Software</span><span class="p">(</span><span class="s2">&quot;Reducer&quot;</span><span class="p">,</span> <span class="s2">&quot;1.2.3&quot;</span><span class="p">,</span> <span class="s2">&quot;Ubuntu-20.04&quot;</span><span class="p">),</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;A Person&quot;</span><span class="p">,</span> <span class="s2">&quot;University&quot;</span><span class="p">),</span>
+            <span class="p">[</span><span class="s2">&quot;footprint doi&quot;</span><span class="p">,</span> <span class="s2">&quot;background&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span>
+            <span class="o">==</span> <span class="s2">&quot;software: {name: Reducer, version: 1.2.3, platform: Ubuntu-20.04}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;timestamp: 2021-07-07T09:11:20</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;creator:</span><span class="se">\n</span><span class="s2">  name: A Person</span><span class="se">\n</span><span class="s2">  affiliation: University</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;corrections:</span><span class="se">\n</span><span class="s2">- footprint doi</span><span class="se">\n</span><span class="s2">- background</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestReduction.test_call_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_reduction.html#orsopy.fileio.tests.test_reduction.TestReduction.test_call_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_call_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform with call to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">reduction</span><span class="o">.</span><span class="n">Reduction</span><span class="p">(</span>
+            <span class="n">reduction</span><span class="o">.</span><span class="n">Software</span><span class="p">(</span><span class="s2">&quot;Reducer&quot;</span><span class="p">,</span> <span class="s2">&quot;1.2.3&quot;</span><span class="p">,</span> <span class="s2">&quot;Ubuntu-20.04&quot;</span><span class="p">),</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;A Person&quot;</span><span class="p">,</span> <span class="s2">&quot;University&quot;</span><span class="p">),</span>
+            <span class="p">[</span><span class="s2">&quot;footprint doi&quot;</span><span class="p">,</span> <span class="s2">&quot;background&quot;</span><span class="p">],</span>
+            <span class="n">call</span><span class="o">=</span><span class="s2">&quot;sh myreducer.sh 1 0&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span>
+            <span class="s2">&quot;software: {name: Reducer, version: 1.2.3, platform: Ubuntu-20.04}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;timestamp: 2021-07-07T09:11:20</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;creator:</span><span class="se">\n</span><span class="s2">  name: A Person</span><span class="se">\n</span><span class="s2">  affiliation: University</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;corrections:</span><span class="se">\n</span><span class="s2">- footprint doi</span><span class="se">\n</span><span class="s2">- background</span><span class="se">\n</span><span class="s2">call: &quot;</span>
+            <span class="s2">&quot;sh myreducer.sh 1 0</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestReduction.test_script_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_reduction.html#orsopy.fileio.tests.test_reduction.TestReduction.test_script_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_script_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform with script to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">reduction</span><span class="o">.</span><span class="n">Reduction</span><span class="p">(</span>
+            <span class="n">reduction</span><span class="o">.</span><span class="n">Software</span><span class="p">(</span><span class="s2">&quot;Reducer&quot;</span><span class="p">,</span> <span class="s2">&quot;1.2.3&quot;</span><span class="p">,</span> <span class="s2">&quot;Ubuntu-20.04&quot;</span><span class="p">),</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;A Person&quot;</span><span class="p">,</span> <span class="s2">&quot;University&quot;</span><span class="p">),</span>
+            <span class="p">[</span><span class="s2">&quot;footprint doi&quot;</span><span class="p">,</span> <span class="s2">&quot;background&quot;</span><span class="p">],</span>
+            <span class="n">script</span><span class="o">=</span><span class="s2">&quot;/home/user/user1/scripts/reducer.py&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span>
+            <span class="o">==</span> <span class="s2">&quot;software: {name: Reducer, version: 1.2.3, platform: Ubuntu-20.04}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;timestamp: 2021-07-07T09:11:20</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;creator:</span><span class="se">\n</span><span class="s2">  name: A Person</span><span class="se">\n</span><span class="s2">  affiliation: University</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;corrections:</span><span class="se">\n</span><span class="s2">- footprint doi</span><span class="se">\n</span><span class="s2">- background</span><span class="se">\n</span><span class="s2">script: &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;/home/user/user1/scripts/reducer.py</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestReduction.test_computer_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_reduction.html#orsopy.fileio.tests.test_reduction.TestReduction.test_computer_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_computer_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform with computer to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">reduction</span><span class="o">.</span><span class="n">Reduction</span><span class="p">(</span>
+            <span class="n">reduction</span><span class="o">.</span><span class="n">Software</span><span class="p">(</span><span class="s2">&quot;Reducer&quot;</span><span class="p">,</span> <span class="s2">&quot;1.2.3&quot;</span><span class="p">,</span> <span class="s2">&quot;Ubuntu-20.04&quot;</span><span class="p">),</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;A Person&quot;</span><span class="p">,</span> <span class="s2">&quot;University&quot;</span><span class="p">),</span>
+            <span class="p">[</span><span class="s2">&quot;footprint doi&quot;</span><span class="p">,</span> <span class="s2">&quot;background&quot;</span><span class="p">],</span>
+            <span class="n">computer</span><span class="o">=</span><span class="s2">&quot;cluster.esss.dk&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span>
+            <span class="o">==</span> <span class="s2">&quot;software: {name: Reducer, version: 1.2.3, platform: Ubuntu-20.04}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;timestamp: 2021-07-07T09:11:20</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;creator:</span><span class="se">\n</span><span class="s2">  name: A Person</span><span class="se">\n</span><span class="s2">  affiliation: University</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;corrections:</span><span class="se">\n</span><span class="s2">- footprint doi</span><span class="se">\n</span><span class="s2">- background</span><span class="se">\n</span><span class="s2">computer: &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;cluster.esss.dk</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestReduction.test_binary_to_yaml">
+<a class="viewcode-back" href="../../../../orsopy.fileio.tests.test_reduction.html#orsopy.fileio.tests.test_reduction.TestReduction.test_binary_to_yaml">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_binary_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform with computer to yaml.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">reduction</span><span class="o">.</span><span class="n">Reduction</span><span class="p">(</span>
+            <span class="n">reduction</span><span class="o">.</span><span class="n">Software</span><span class="p">(</span><span class="s2">&quot;Reducer&quot;</span><span class="p">,</span> <span class="s2">&quot;1.2.3&quot;</span><span class="p">,</span> <span class="s2">&quot;Ubuntu-20.04&quot;</span><span class="p">),</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="s2">&quot;A Person&quot;</span><span class="p">,</span> <span class="s2">&quot;University&quot;</span><span class="p">),</span>
+            <span class="p">[</span><span class="s2">&quot;footprint doi&quot;</span><span class="p">,</span> <span class="s2">&quot;background&quot;</span><span class="p">],</span>
+            <span class="n">binary</span><span class="o">=</span><span class="s2">&quot;/home/users/user1/bin/file&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span>
+            <span class="o">==</span> <span class="s2">&quot;software: {name: Reducer, version: 1.2.3, platform: Ubuntu-20.04}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;timestamp: 2021-07-07T09:11:20</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;creator:</span><span class="se">\n</span><span class="s2">  name: A Person</span><span class="se">\n</span><span class="s2">  affiliation: University</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;corrections:</span><span class="se">\n</span><span class="s2">- footprint doi</span><span class="se">\n</span><span class="s2">- background</span><span class="se">\n</span><span class="s2">binary: &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;/home/users/user1/bin/file</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

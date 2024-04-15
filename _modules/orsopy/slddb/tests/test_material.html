@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.slddb.tests.test_material &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">orsopy.slddb.tests.test_material</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for orsopy.slddb.tests.test_material</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">numpy.testing</span> <span class="kn">import</span> <span class="n">assert_array_equal</span>
+
+<span class="kn">from</span> <span class="nn">orsopy.slddb.constants</span> <span class="kn">import</span> <span class="n">Cu_kalpha</span><span class="p">,</span> <span class="n">Cu_kalpha1</span><span class="p">,</span> <span class="n">Mo_kalpha</span><span class="p">,</span> <span class="n">Mo_kalpha1</span>
+<span class="kn">from</span> <span class="nn">orsopy.slddb.element_table</span> <span class="kn">import</span> <span class="n">Element</span><span class="p">,</span> <span class="n">element</span>
+<span class="kn">from</span> <span class="nn">orsopy.slddb.element_table.nlengths</span> <span class="kn">import</span> <span class="n">NEUTRON_SCATTERING_LENGTHS</span>
+<span class="c1"># reference data uses Henke tables</span>
+<span class="kn">from</span> <span class="nn">orsopy.slddb.element_table.xray_henke</span> <span class="kn">import</span> <span class="n">XRAY_SCATTERING_FACTORS</span>
+<span class="kn">from</span> <span class="nn">orsopy.slddb.material</span> <span class="kn">import</span> <span class="n">Formula</span><span class="p">,</span> <span class="n">Material</span>
+
+<span class="n">element</span><span class="o">.</span><span class="n">XRAY_SCATTERING_FACTORS</span> <span class="o">=</span> <span class="n">XRAY_SCATTERING_FACTORS</span>
+<span class="c1"># import other n_lengths for coverage</span>
+
+<span class="c1"># calculated using NIST calculator at https://www.ncnr.nist.gov/resources/activation/</span>
+<span class="n">REFERENCE_RESULTS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># compound: [neutron, xray Cu, xray Mo]</span>
+    <span class="s2">&quot;Ni&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">9.406e-6</span> <span class="o">-</span> <span class="mf">0.001e-6</span><span class="n">j</span><span class="p">,</span> <span class="mf">64.390e-6</span> <span class="o">-</span> <span class="mf">1.351e-6</span><span class="n">j</span><span class="p">,</span> <span class="mf">72.969e-6</span> <span class="o">-</span> <span class="mf">2.894e-6</span><span class="n">j</span><span class="p">],</span>  <span class="c1"># dens=8.9</span>
+    <span class="s2">&quot;Fe2O3&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">7.176e-6</span> <span class="o">-</span> <span class="mi">0</span><span class="n">j</span><span class="p">,</span> <span class="mf">41.125e-6</span> <span class="o">-</span> <span class="mf">3.635e-6</span><span class="n">j</span><span class="p">,</span> <span class="mf">42.740e-6</span> <span class="o">-</span> <span class="mf">0.956e-6</span><span class="n">j</span><span class="p">],</span>  <span class="c1"># dens=5.24</span>
+    <span class="s2">&quot;D2O&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">6.393e-6</span> <span class="o">-</span> <span class="mi">0</span><span class="n">j</span><span class="p">,</span> <span class="mf">9.455e-6</span> <span class="o">-</span> <span class="mf">0.032e-6</span><span class="n">j</span><span class="p">,</span> <span class="mf">9.416e-6</span> <span class="o">-</span> <span class="mf">0.006e-6</span><span class="n">j</span><span class="p">],</span>  <span class="c1"># dens=1.11</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="TestMaterial">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial">[docs]</a>
+<span class="k">class</span> <span class="nc">TestMaterial</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestMaterial.test_density">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_density">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_density</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">8.9</span><span class="p">)</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">5.24</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">dens</span><span class="p">,</span> <span class="mf">8.9</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">dens</span><span class="p">,</span> <span class="mf">5.24</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">fu_dens</span><span class="o">=</span><span class="mf">1.04</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_volume">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_volume">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">fu_volume</span><span class="o">=</span><span class="mf">10.950863331638253</span><span class="p">)</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.0</span><span class="p">)],</span> <span class="n">fu_volume</span><span class="o">=</span><span class="mf">50.60467453722025</span><span class="p">)</span>
+        <span class="n">m3</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">fu_dens</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mf">10.950863331638253</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">dens</span><span class="p">,</span> <span class="mf">8.9</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">dens</span><span class="p">,</span> <span class="mf">5.24</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">dens</span><span class="p">,</span> <span class="n">m3</span><span class="o">.</span><span class="n">dens</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">fu_volume</span><span class="p">,</span> <span class="mf">10.950863331638253</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">fu_volume</span><span class="p">,</span> <span class="mf">50.60467453722025</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m3</span><span class="o">.</span><span class="n">fu_volume</span><span class="p">,</span> <span class="mf">10.950863331638253</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">fu_volume</span><span class="o">=</span><span class="mf">10.950864</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_rho_n">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_rho_n">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_rho_n</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">rho_n</span><span class="o">=</span><span class="n">REFERENCE_RESULTS</span><span class="p">[</span><span class="s2">&quot;Ni&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.0</span><span class="p">)],</span> <span class="n">rho_n</span><span class="o">=</span><span class="n">REFERENCE_RESULTS</span><span class="p">[</span><span class="s2">&quot;Fe2O3&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">dens</span><span class="p">,</span> <span class="mf">8.9</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">dens</span><span class="p">,</span> <span class="mf">5.24</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_rho_x">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_rho_x">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_rho_x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">xsld</span><span class="o">=</span><span class="n">REFERENCE_RESULTS</span><span class="p">[</span><span class="s2">&quot;Ni&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">xE</span><span class="o">=</span><span class="n">Mo_kalpha</span><span class="p">)</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.0</span><span class="p">)],</span> <span class="n">xsld</span><span class="o">=</span><span class="n">REFERENCE_RESULTS</span><span class="p">[</span><span class="s2">&quot;Fe2O3&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">xE</span><span class="o">=</span><span class="n">Cu_kalpha</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">dens</span><span class="p">,</span> <span class="mf">8.9</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">dens</span><span class="p">,</span> <span class="mf">5.24</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_formula">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_formula">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_formula</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">xsld</span><span class="o">=</span><span class="n">REFERENCE_RESULTS</span><span class="p">[</span><span class="s2">&quot;Ni&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">xE</span><span class="o">=</span><span class="n">Mo_kalpha</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">formula</span><span class="p">),</span> <span class="s2">&quot;Ni&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">formula</span><span class="p">,</span> <span class="n">Formula</span><span class="p">([(</span><span class="s2">&quot;Ni&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)]))</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_creation">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_creation">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">,</span> <span class="n">dens</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">Material</span><span class="p">(</span><span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">),</span> <span class="n">dens</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
+            <span class="n">Material</span><span class="p">(</span><span class="mf">123.4</span><span class="p">,</span> <span class="n">dens</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_combine">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_combine">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_combine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">fu_volume</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Co&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">fu_volume</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">ms</span> <span class="o">=</span> <span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span>
+        <span class="n">mss</span> <span class="o">=</span> <span class="n">m1</span> <span class="o">+</span> <span class="n">m1</span>
+        <span class="n">mp1</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">m1</span>
+        <span class="n">mp2</span> <span class="o">=</span> <span class="n">m2</span> <span class="o">*</span> <span class="mf">2.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">formula</span><span class="p">),</span> <span class="s2">&quot;CoNi&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mss</span><span class="o">.</span><span class="n">formula</span><span class="p">),</span> <span class="s2">&quot;Ni2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">fu_volume</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">mp1</span><span class="o">.</span><span class="n">fu_volume</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">mp2</span><span class="o">.</span><span class="n">fu_volume</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="n">m1</span><span class="o">.</span><span class="n">formula</span> <span class="o">+</span> <span class="n">m2</span><span class="o">.</span><span class="n">formula</span> <span class="o">+</span> <span class="n">m2</span><span class="o">.</span><span class="n">formula</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fs</span><span class="p">),</span> <span class="s2">&quot;Co2Ni&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">m1</span> <span class="o">+</span> <span class="s2">&quot;abc&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="s2">&quot;abc&quot;</span> <span class="o">*</span> <span class="n">m1</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_formula_calculations">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_formula_calculations">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_formula_calculations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)</span>
+        <span class="n">f2</span> <span class="o">=</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">f2</span> <span class="o">+</span> <span class="n">f1</span><span class="p">,</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;H2O&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">f2</span> <span class="o">-</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_fail">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_fail">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)])</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Pu&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">20.0</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Po&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">20.0</span><span class="p">)</span>
+        <span class="n">mok</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">,</span> <span class="n">dens</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">mok</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_neutron_ni">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_neutron_ni">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_neutron_ni</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">8.9</span><span class="p">)</span>
+
+        <span class="c1"># compare with value from NIST</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">rho_n</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">REFERENCE_RESULTS</span><span class="p">[</span><span class="s2">&quot;Ni&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">rho_n</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">REFERENCE_RESULTS</span><span class="p">[</span><span class="s2">&quot;Ni&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_neutron_d2o">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_neutron_d2o">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_neutron_d2o</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">1.11</span><span class="p">)</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;H[2]&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">1.11</span><span class="p">)</span>
+
+        <span class="c1"># compare with value from NIST</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">rho_n</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">REFERENCE_RESULTS</span><span class="p">[</span><span class="s2">&quot;D2O&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">rho_n</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">REFERENCE_RESULTS</span><span class="p">[</span><span class="s2">&quot;D2O&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">rho_n</span><span class="p">,</span> <span class="n">m2</span><span class="o">.</span><span class="n">rho_n</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_neutron_fe2o3">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_neutron_fe2o3">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_neutron_fe2o3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">5.24</span><span class="p">)</span>
+
+        <span class="c1"># compare with value from NIST</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">rho_n</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">REFERENCE_RESULTS</span><span class="p">[</span><span class="s2">&quot;Fe2O3&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">rho_n</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">REFERENCE_RESULTS</span><span class="p">[</span><span class="s2">&quot;Fe2O3&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_xray_kalpha">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_xray_kalpha">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_xray_kalpha</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">5.24</span><span class="p">)</span>
+
+        <span class="c1"># compare calculated values with known parameters from external sources</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">sld</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">rho_of_E</span><span class="p">(</span><span class="n">Cu_kalpha</span><span class="p">)</span>
+            <span class="c1"># sld-calculator.appspot.com: 4.1125e-05  	-3.6347e-06</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">sld</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="mf">4.1125e-05</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">sld</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.6347e-06</span><span class="p">)</span>
+            <span class="c1"># Henke: 8047.82959 eV  delta=1.55382077E-05  beta=1.37184929E-06</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">delta_of_E</span><span class="p">(</span><span class="n">Cu_kalpha1</span><span class="p">),</span> <span class="mf">1.55382e-05</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">beta_of_E</span><span class="p">(</span><span class="n">Cu_kalpha1</span><span class="p">),</span> <span class="mf">1.37185e-06</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="c1"># Henke: 8047.83 eV  mu=8.93664 µm</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">mu_of_E</span><span class="p">(</span><span class="n">Cu_kalpha1</span><span class="p">),</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">8.93664e4</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="s2">&quot;Mo&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">sld</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">rho_of_E</span><span class="p">(</span><span class="n">Mo_kalpha</span><span class="p">)</span>
+            <span class="c1"># sld-calculator.appspot.com: 4.274e-05  	-9.5604e-07</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">sld</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="mf">4.274e-05</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">sld</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.5604e-07</span><span class="p">)</span>
+            <span class="c1"># Henke: 17479.4004 eV  delta=3.4223483E-06  beta=7.66335759E-08</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">delta_of_E</span><span class="p">(</span><span class="n">Mo_kalpha1</span><span class="p">),</span> <span class="mf">3.4223483e-06</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">beta_of_E</span><span class="p">(</span><span class="n">Mo_kalpha1</span><span class="p">),</span> <span class="mf">7.66335759e-08</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="c1"># Henke: 17479.4 eV  mu=73.6570 µm</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">mu_of_E</span><span class="p">(</span><span class="n">Mo_kalpha1</span><span class="p">),</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">73.6570e4</span><span class="p">,</span> <span class="n">places</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_xray_all">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_xray_all">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_xray_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">5.24</span><span class="p">)</span>
+        <span class="n">E1</span><span class="p">,</span> <span class="n">rho</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">rho_vs_E</span><span class="p">()</span>
+        <span class="n">E2</span><span class="p">,</span> <span class="n">delta</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">delta_vs_E</span><span class="p">()</span>
+        <span class="n">E3</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">beta_vs_E</span><span class="p">()</span>
+        <span class="n">E4</span><span class="p">,</span> <span class="n">mu</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">mu_vs_E</span><span class="p">()</span>
+        <span class="n">assert_array_equal</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="n">E2</span><span class="p">)</span>
+        <span class="n">assert_array_equal</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="n">E3</span><span class="p">)</span>
+        <span class="n">assert_array_equal</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="n">E4</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_magnetic">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_magnetic">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_magnetic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m0</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">5.24</span><span class="p">)</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">5.24</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">3.5</span><span class="p">)</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">5.24</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">m1</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">m0</span><span class="o">.</span><span class="n">rho_m</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">m0</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="n">m2</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">rho_m</span><span class="p">,</span> <span class="n">m2</span><span class="o">.</span><span class="n">rho_m</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="n">m2</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.0</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">5.24</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">m1</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">m1</span><span class="o">.</span><span class="n">M</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_string_conversion">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_string_conversion">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_string_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Mo&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.2</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">5.24</span><span class="p">,</span> <span class="n">ID</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span>
+        <span class="nb">repr</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span>
+            <span class="p">[(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Mo&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.2</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">5.24</span><span class="p">,</span> <span class="n">ID</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MoFeO&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span>
+        <span class="nb">repr</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_dict_conversion">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_dict_conversion">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_dict_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">([(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Mo&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Fe&quot;</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span> <span class="mf">3.2</span><span class="p">)],</span> <span class="n">dens</span><span class="o">=</span><span class="mf">5.24</span><span class="p">,</span> <span class="n">ID</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+        <span class="n">m1</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">xray_units</span><span class="o">=</span><span class="s2">&quot;sld&quot;</span><span class="p">)</span>
+        <span class="n">m1</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">xray_units</span><span class="o">=</span><span class="s2">&quot;n_db&quot;</span><span class="p">)</span>
+        <span class="n">m1</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">xray_units</span><span class="o">=</span><span class="s2">&quot;edens&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">m1</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">xray_units</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;B[10]4C&quot;</span><span class="p">,</span> <span class="n">dens</span><span class="o">=</span><span class="mf">2.55</span><span class="p">)</span>
+        <span class="n">m2</span><span class="o">.</span><span class="n">export</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_missing_data">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_missing_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_missing_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">Element</span><span class="p">()</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Mo&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">f_of_E</span><span class="p">(</span><span class="mf">1e10</span><span class="p">),</span> <span class="mf">0.0</span> <span class="o">+</span> <span class="mi">0</span><span class="n">j</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_element_properties">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_element_properties">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_element_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Mo&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">E</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">E</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">E</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">fpp</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">Lamda</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">b_lambda</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s2">&quot;Gd&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">Lamda</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">b_abs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">Lamda</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">b_lambda</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_lambda_interpolation">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_lambda_interpolation">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_lambda_interpolation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">b_of_L</span><span class="p">(</span><span class="mf">1.798</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">n</span><span class="o">.</span><span class="n">b_of_L</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">n</span><span class="o">.</span><span class="n">b_of_L</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">dens</span><span class="o">=</span><span class="mf">2.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">rho_n</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">rho_n_of_L</span><span class="p">(</span><span class="mf">1.798</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">,</span> <span class="n">dens</span><span class="o">=</span><span class="mf">2.5</span><span class="p">)</span><span class="o">.</span><span class="n">b_vs_L</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_element_strings">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_element_strings">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_element_strings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">)</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="nb">repr</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s2">&quot;H[2]&quot;</span><span class="p">)</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="nb">repr</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_deuteration">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_deuteration">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_deuteration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;H2O&quot;</span><span class="p">,</span> <span class="n">dens</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;D2O&quot;</span><span class="p">,</span> <span class="n">fu_dens</span><span class="o">=</span><span class="n">m1</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">)</span>
+        <span class="n">m3</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;HHxO&quot;</span><span class="p">,</span> <span class="n">fu_dens</span><span class="o">=</span><span class="n">m1</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;exchangeable&quot;</span><span class="p">)</span>
+        <span class="n">m4</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;HDO&quot;</span><span class="p">,</span> <span class="n">fu_dens</span><span class="o">=</span><span class="n">m1</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">deuterated</span><span class="o">.</span><span class="n">formula</span><span class="p">,</span> <span class="n">m2</span><span class="o">.</span><span class="n">formula</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">deuterated</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">,</span> <span class="n">m2</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">m3</span><span class="o">.</span><span class="n">deuterated</span><span class="o">.</span><span class="n">formula</span><span class="p">,</span> <span class="n">m2</span><span class="o">.</span><span class="n">formula</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m3</span><span class="o">.</span><span class="n">deuterated</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">,</span> <span class="n">m2</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">deuterate</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">formula</span><span class="p">,</span> <span class="n">m4</span><span class="o">.</span><span class="n">formula</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">deuterate</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">,</span> <span class="n">m4</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">m3</span><span class="o">.</span><span class="n">edeuterated</span><span class="o">.</span><span class="n">formula</span><span class="p">,</span> <span class="n">Formula</span><span class="p">(</span><span class="s2">&quot;DHxO&quot;</span><span class="p">))</span>
+        <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;HHxO&quot;</span><span class="p">,</span> <span class="n">fu_dens</span><span class="o">=</span><span class="n">m1</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">)</span><span class="o">.</span><span class="n">edeuterated</span>  <span class="c1"># check the case of name=None</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_exchange">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_exchange">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_exchange</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;H2O&quot;</span><span class="p">,</span> <span class="n">dens</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">m3</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;HHxO&quot;</span><span class="p">,</span> <span class="n">fu_dens</span><span class="o">=</span><span class="n">m1</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">)</span>
+        <span class="n">m3a</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;HHxO&quot;</span><span class="p">,</span> <span class="n">fu_dens</span><span class="o">=</span><span class="n">m1</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+        <span class="n">m4</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;HDO&quot;</span><span class="p">,</span> <span class="n">dens</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">formula</span><span class="p">,</span> <span class="n">m3</span><span class="o">.</span><span class="n">not_exchanged</span><span class="o">.</span><span class="n">formula</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">m4</span><span class="o">.</span><span class="n">formula</span><span class="p">,</span> <span class="n">m3</span><span class="o">.</span><span class="n">exchanged</span><span class="o">.</span><span class="n">formula</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m3a</span><span class="o">.</span><span class="n">not_exchanged</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">,</span> <span class="n">m1</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m3a</span><span class="o">.</span><span class="n">exchanged</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">,</span> <span class="n">m1</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestMaterial.test_match_point">
+<a class="viewcode-back" href="../../../../orsopy.slddb.tests.test_material.html#orsopy.slddb.tests.test_material.TestMaterial.test_match_point">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_match_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;H2O&quot;</span><span class="p">,</span> <span class="n">dens</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;D2O&quot;</span><span class="p">,</span> <span class="n">fu_dens</span><span class="o">=</span><span class="n">m1</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">)</span>
+        <span class="c1"># replace D2O with one that has equal volume</span>
+        <span class="kn">from</span> <span class="nn">orsopy.slddb</span> <span class="kn">import</span> <span class="n">material</span>
+
+        <span class="n">material</span><span class="o">.</span><span class="n">H2O</span> <span class="o">=</span> <span class="n">m1</span>
+        <span class="n">material</span><span class="o">.</span><span class="n">D2O</span> <span class="o">=</span> <span class="n">m2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">((</span><span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span><span class="p">)</span><span class="o">.</span><span class="n">match_point</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">((</span><span class="mi">3</span> <span class="o">*</span> <span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span><span class="p">)</span><span class="o">.</span><span class="n">match_point</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">((</span><span class="n">m1</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">m2</span><span class="p">)</span><span class="o">.</span><span class="n">match_point</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">)</span>
+
+        <span class="n">m3</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;HDHx2O2&quot;</span><span class="p">,</span> <span class="n">fu_dens</span><span class="o">=</span><span class="n">m1</span><span class="o">.</span><span class="n">fu_dens</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">m3</span><span class="o">.</span><span class="n">match_point</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="mf">1.1</span><span class="p">)</span>
+        <span class="n">m4</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s2">&quot;D3O&quot;</span><span class="p">,</span> <span class="n">fu_dens</span><span class="o">=</span><span class="n">m1</span><span class="o">.</span><span class="n">fu_dens</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">m4</span><span class="o">.</span><span class="n">match_point</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

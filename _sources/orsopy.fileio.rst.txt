@@ -1,0 +1,31 @@
+orsopy.fileio package
+=====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   orsopy.fileio.tests
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   orsopy.fileio.base
+   orsopy.fileio.data_source
+   orsopy.fileio.model_language
+   orsopy.fileio.orso
+   orsopy.fileio.reduction
+   orsopy.fileio.typing_backport
+
+Module contents
+---------------
+
+.. automodule:: orsopy.fileio
+   :members:
+   :undoc-members:
+   :show-inheritance:

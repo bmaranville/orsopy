@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.slddb.database &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">orsopy.slddb.database</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for orsopy.slddb.database</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Manage database creation, insertion and access.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+
+<span class="kn">from</span> <span class="nn">.comparators</span> <span class="kn">import</span> <span class="n">Comparator</span>
+<span class="kn">from</span> <span class="nn">.dbconfig</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DB_MATERIALS_CONVERTERS</span><span class="p">,</span> <span class="n">DB_MATERIALS_FIELD_DEFAULTS</span><span class="p">,</span> <span class="n">DB_MATERIALS_FIELDS</span><span class="p">,</span> <span class="n">DB_MATERIALS_NAME</span><span class="p">,</span>
+                       <span class="n">db_lookup</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.importers</span> <span class="kn">import</span> <span class="n">importers</span>
+<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">Formula</span><span class="p">,</span> <span class="n">Material</span>
+
+
+<div class="viewcode-block" id="SLDDB">
+<a class="viewcode-back" href="../../../orsopy.slddb.database.html#orsopy.slddb.database.SLDDB">[docs]</a>
+<span class="k">class</span> <span class="nc">SLDDB</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Database to store material parameters to calculate</span>
+<span class="sd">    scattering length densities (SLDs) for neutron</span>
+<span class="sd">    and x-ray scattering.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbfile</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">dbfile</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SLDDB.import_material">
+<a class="viewcode-back" href="../../../orsopy.slddb.database.html#orsopy.slddb.database.SLDDB.import_material">[docs]</a>
+    <span class="k">def</span> <span class="nf">import_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">importer</span> <span class="ow">in</span> <span class="n">importers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">importer</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="n">suffix</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">importer</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;File import failed for </span><span class="si">%s</span><span class="s2">, no suitable importer found&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">formula</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="n">commit</span><span class="p">,</span> <span class="o">**</span><span class="n">importer</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="SLDDB.add_material">
+<a class="viewcode-back" href="../../../orsopy.slddb.database.html#orsopy.slddb.database.SLDDB.add_material">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">formula</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="n">din</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DB_MATERIALS_FIELDS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a valid data field&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+            <span class="n">din</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_lookup</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="s2">&quot;density&quot;</span> <span class="ow">in</span> <span class="n">din</span> <span class="ow">or</span> <span class="s2">&quot;FU_volume&quot;</span> <span class="ow">in</span> <span class="n">din</span> <span class="ow">or</span> <span class="s2">&quot;SLD_n&quot;</span> <span class="ow">in</span> <span class="n">din</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;SLD_x&quot;</span> <span class="ow">in</span> <span class="n">din</span> <span class="ow">and</span> <span class="s2">&quot;E_x&quot;</span> <span class="ow">in</span> <span class="n">din</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not enough information to determine density&quot;</span><span class="p">)</span>
+
+        <span class="n">din</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_lookup</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">din</span><span class="p">[</span><span class="s2">&quot;formula&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_lookup</span><span class="p">[</span><span class="s2">&quot;formula&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">formula</span><span class="p">)</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="c1"># check if entry already exists</span>
+        <span class="n">qstr</span> <span class="o">=</span> <span class="s2">&quot;SELECT * FROM </span><span class="si">%s</span><span class="s2"> WHERE </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">DB_MATERIALS_NAME</span><span class="p">,</span> <span class="s2">&quot; AND &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">=?&quot;</span> <span class="o">%</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">din</span><span class="o">.</span><span class="n">keys</span><span class="p">()]))</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">qstr</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">din</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Entry with this data already exists&quot;</span><span class="p">)</span>
+
+        <span class="n">qstr</span> <span class="o">=</span> <span class="s2">&quot;INSERT INTO </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">) VALUES (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">DB_MATERIALS_NAME</span><span class="p">,</span>
+            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">din</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;?&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">din</span><span class="o">.</span><span class="n">keys</span><span class="p">()]),</span>
+        <span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">qstr</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">din</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">commit</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SLDDB.update_material">
+<a class="viewcode-back" href="../../../orsopy.slddb.database.html#orsopy.slddb.database.SLDDB.update_material">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="n">din</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_material</span><span class="p">(</span><span class="n">ID</span><span class="o">=</span><span class="n">ID</span><span class="p">,</span> <span class="n">filter_invalid</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">din</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">din</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">din</span><span class="p">[</span><span class="s2">&quot;updated&quot;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">din</span><span class="p">[</span><span class="s2">&quot;validated&quot;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">din</span><span class="p">[</span><span class="s2">&quot;validated_by&quot;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">din</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DB_MATERIALS_FIELDS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a valid data field&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">din</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_lookup</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">din</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;density&quot;</span><span class="p">,</span> <span class="s2">&quot;FU_volume&quot;</span><span class="p">,</span> <span class="s2">&quot;SLD_n&quot;</span><span class="p">,</span> <span class="s2">&quot;SLD_x&quot;</span><span class="p">]]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not enough information to determine density&quot;</span><span class="p">)</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+        <span class="n">qstr</span> <span class="o">=</span> <span class="s2">&quot;UPDATE </span><span class="si">%s</span><span class="s2"> SET </span><span class="si">%s</span><span class="s2">,updated = CURRENT_TIMESTAMP,validated = NULL, validated_by = NULL WHERE ID==?&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">DB_MATERIALS_NAME</span><span class="p">,</span>
+            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> = ?&quot;</span> <span class="o">%</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">din</span><span class="o">.</span><span class="n">keys</span><span class="p">()]),</span>
+        <span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">qstr</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">din</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="p">(</span><span class="n">ID</span><span class="p">,))</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">commit</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SLDDB.search_material">
+<a class="viewcode-back" href="../../../orsopy.slddb.database.html#orsopy.slddb.database.SLDDB.search_material">[docs]</a>
+    <span class="k">def</span> <span class="nf">search_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">join_and</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">serializable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">filter_invalid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DB_MATERIALS_FIELDS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a valid data field&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sstr</span> <span class="o">=</span> <span class="s2">&quot;SELECT * FROM </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">DB_MATERIALS_NAME</span>
+            <span class="k">if</span> <span class="n">filter_invalid</span><span class="p">:</span>
+                <span class="n">sstr</span> <span class="o">+=</span> <span class="s2">&quot; WHERE invalid IS NULL&quot;</span>
+            <span class="n">qstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">qlst</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">ustr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sstr</span> <span class="o">=</span> <span class="s2">&quot;SELECT * FROM </span><span class="si">%s</span><span class="s2"> WHERE &quot;</span> <span class="o">%</span> <span class="n">DB_MATERIALS_NAME</span>
+            <span class="k">if</span> <span class="n">filter_invalid</span><span class="p">:</span>
+                <span class="n">sstr</span> <span class="o">+=</span> <span class="s2">&quot;invalid IS NULL AND &quot;</span>
+            <span class="n">ustr</span> <span class="o">=</span> <span class="s2">&quot;UPDATE </span><span class="si">%s</span><span class="s2"> SET accessed = accessed + 1 WHERE &quot;</span> <span class="o">%</span> <span class="n">DB_MATERIALS_NAME</span>
+            <span class="n">qstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">qlst</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Comparator</span><span class="p">):</span>
+                    <span class="c1"># user has supplied a comparator instead of a value</span>
+                    <span class="n">cmp</span><span class="p">:</span> <span class="n">Comparator</span> <span class="o">=</span> <span class="n">value</span>
+                    <span class="n">cmp</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># use comparator for specific validator</span>
+                    <span class="n">cmp</span><span class="p">:</span> <span class="n">Comparator</span> <span class="o">=</span> <span class="n">db_lookup</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">comparator</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                <span class="n">qstr</span> <span class="o">+=</span> <span class="n">cmp</span><span class="o">.</span><span class="n">query_string</span><span class="p">()</span>
+                <span class="n">qlst_add</span> <span class="o">=</span> <span class="n">cmp</span><span class="o">.</span><span class="n">query_args</span><span class="p">()</span>
+                <span class="n">qlst</span> <span class="o">+=</span> <span class="n">qlst_add</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">qlst_add</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">join_and</span><span class="p">:</span>
+                        <span class="n">qstr</span> <span class="o">+=</span> <span class="s2">&quot; AND &quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">qstr</span> <span class="o">+=</span> <span class="s2">&quot;  OR &quot;</span>
+            <span class="n">qstr</span> <span class="o">=</span> <span class="n">qstr</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+            <span class="n">sstr</span> <span class="o">+</span> <span class="n">qstr</span> <span class="o">+</span> <span class="s2">&quot; ORDER BY validated DESC, selected DESC, accessed DESC LIMIT </span><span class="si">%i</span><span class="s2">,</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">),</span> <span class="n">qlst</span>
+        <span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="o">*</span><span class="n">ignore</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">description</span><span class="p">]</span>
+        <span class="c1"># update access counter</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">ustr</span> <span class="o">+</span> <span class="n">qstr</span><span class="p">,</span> <span class="n">qlst</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+        <span class="c1"># convert values</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">serializable</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="n">rowdict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">db_lookup</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">revert_serializable</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">row</span><span class="p">)}</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rowdict</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="n">rowdict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">db_lookup</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">revert</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">row</span><span class="p">)}</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rowdict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="SLDDB.count_material">
+<a class="viewcode-back" href="../../../orsopy.slddb.database.html#orsopy.slddb.database.SLDDB.count_material">[docs]</a>
+    <span class="k">def</span> <span class="nf">count_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">join_and</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">filter_invalid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DB_MATERIALS_FIELDS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a valid data field&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sstr</span> <span class="o">=</span> <span class="s2">&quot;SELECT COUNT(*) FROM </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">DB_MATERIALS_NAME</span>
+            <span class="k">if</span> <span class="n">filter_invalid</span><span class="p">:</span>
+                <span class="n">sstr</span> <span class="o">+=</span> <span class="s2">&quot; WHERE invalid IS NULL&quot;</span>
+            <span class="n">qstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">qlst</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sstr</span> <span class="o">=</span> <span class="s2">&quot;SELECT COUNT(*) FROM </span><span class="si">%s</span><span class="s2"> WHERE &quot;</span> <span class="o">%</span> <span class="n">DB_MATERIALS_NAME</span>
+            <span class="k">if</span> <span class="n">filter_invalid</span><span class="p">:</span>
+                <span class="n">sstr</span> <span class="o">+=</span> <span class="s2">&quot;invalid IS NULL AND &quot;</span>
+            <span class="n">qstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">qlst</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Comparator</span><span class="p">):</span>
+                    <span class="c1"># user has supplied a comparator instead of a value</span>
+                    <span class="n">cmp</span><span class="p">:</span> <span class="n">Comparator</span> <span class="o">=</span> <span class="n">value</span>
+                    <span class="n">cmp</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># use comparator for specific validator</span>
+                    <span class="n">cmp</span><span class="p">:</span> <span class="n">Comparator</span> <span class="o">=</span> <span class="n">db_lookup</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">comparator</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                <span class="n">qstr</span> <span class="o">+=</span> <span class="n">cmp</span><span class="o">.</span><span class="n">query_string</span><span class="p">()</span>
+                <span class="n">qlst_add</span> <span class="o">=</span> <span class="n">cmp</span><span class="o">.</span><span class="n">query_args</span><span class="p">()</span>
+                <span class="n">qlst</span> <span class="o">+=</span> <span class="n">qlst_add</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">qlst_add</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">join_and</span><span class="p">:</span>
+                        <span class="n">qstr</span> <span class="o">+=</span> <span class="s2">&quot; AND &quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">qstr</span> <span class="o">+=</span> <span class="s2">&quot;  OR &quot;</span>
+            <span class="n">qstr</span> <span class="o">=</span> <span class="n">qstr</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sstr</span> <span class="o">+</span> <span class="n">qstr</span><span class="p">,</span> <span class="n">qlst</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="c1"># update access counter</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SLDDB.select_material">
+<a class="viewcode-back" href="../../../orsopy.slddb.database.html#orsopy.slddb.database.SLDDB.select_material">[docs]</a>
+    <span class="k">def</span> <span class="nf">select_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Material</span><span class="p">:</span>
+        <span class="c1"># generate Material object from database entry and increment selection counter</span>
+        <span class="n">formula</span> <span class="o">=</span> <span class="n">Formula</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;formula&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;density&quot;</span><span class="p">]:</span>
+            <span class="n">fu_volume</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fu_volume</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;FU_volume&quot;</span><span class="p">]</span>
+        <span class="n">extra_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;invalid&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">extra_data</span><span class="p">[</span><span class="s2">&quot;WARNING&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;This entry has been invalidated by ORSO on </span><span class="si">%s</span><span class="s2">, &quot;</span>
+                <span class="s2">&quot;please contact </span><span class="si">%s</span><span class="s2"> for more information.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;invalid&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;invalid_by&quot;</span><span class="p">])</span>
+            <span class="p">)</span>
+        <span class="n">extra_data</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">])</span>
+        <span class="n">extra_data</span><span class="p">[</span><span class="s2">&quot;ORSO_validated&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;validated&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">extra_data</span><span class="p">[</span><span class="s2">&quot;reference&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reference&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">extra_data</span><span class="p">[</span><span class="s2">&quot;doi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">extra_data</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span>
+            <span class="n">formula</span><span class="p">,</span>
+            <span class="n">dens</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;density&quot;</span><span class="p">],</span>
+            <span class="n">fu_volume</span><span class="o">=</span><span class="n">fu_volume</span><span class="p">,</span>
+            <span class="n">rho_n</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;SLD_n&quot;</span><span class="p">],</span>
+            <span class="n">xsld</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;SLD_x&quot;</span><span class="p">],</span>
+            <span class="n">xE</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;E_x&quot;</span><span class="p">],</span>
+            <span class="n">mu</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;mu&quot;</span><span class="p">],</span>
+            <span class="n">ID</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">],</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+            <span class="n">extra_data</span><span class="o">=</span><span class="n">extra_data</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">ustr</span> <span class="o">=</span> <span class="s2">&quot;UPDATE </span><span class="si">%s</span><span class="s2"> SET selected = selected + 1 WHERE ID == ?&quot;</span> <span class="o">%</span> <span class="n">DB_MATERIALS_NAME</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">ustr</span><span class="p">,</span> <span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">],))</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">m</span></div>
+
+
+<div class="viewcode-block" id="SLDDB.validate_material">
+<a class="viewcode-back" href="../../../orsopy.slddb.database.html#orsopy.slddb.database.SLDDB.validate_material">[docs]</a>
+    <span class="k">def</span> <span class="nf">validate_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="n">ustr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;UPDATE </span><span class="si">%s</span><span class="s2"> SET validated = CURRENT_TIMESTAMP, validated_by = ?,&quot;</span>
+            <span class="s2">&quot; invalid = NULL, invalid_by = NULL WHERE ID == ?&quot;</span> <span class="o">%</span> <span class="n">DB_MATERIALS_NAME</span>
+        <span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">ustr</span><span class="p">,</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">ID</span><span class="p">,))</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SLDDB.invalidate_material">
+<a class="viewcode-back" href="../../../orsopy.slddb.database.html#orsopy.slddb.database.SLDDB.invalidate_material">[docs]</a>
+    <span class="k">def</span> <span class="nf">invalidate_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="n">ustr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;UPDATE </span><span class="si">%s</span><span class="s2"> SET invalid = CURRENT_TIMESTAMP, invalid_by = ?, &quot;</span>
+            <span class="s2">&quot; validated = NULL, validated_by = NULL WHERE ID == ?&quot;</span> <span class="o">%</span> <span class="n">DB_MATERIALS_NAME</span>
+        <span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">ustr</span><span class="p">,</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">ID</span><span class="p">,))</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SLDDB.create_table">
+<a class="viewcode-back" href="../../../orsopy.slddb.database.html#orsopy.slddb.database.SLDDB.create_table">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">name_type</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="n">ci</span><span class="o">.</span><span class="n">sql_type</span><span class="p">,</span> <span class="p">(</span><span class="n">di</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;DEFAULT </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">di</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">fi</span><span class="p">,</span> <span class="n">ci</span><span class="p">,</span> <span class="n">di</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">DB_MATERIALS_FIELDS</span><span class="p">,</span> <span class="n">DB_MATERIALS_CONVERTERS</span><span class="p">,</span> <span class="n">DB_MATERIALS_FIELD_DEFAULTS</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">qstr</span> <span class="o">=</span> <span class="s2">&quot;CREATE TABLE </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">DB_MATERIALS_NAME</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name_type</span><span class="p">))</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">qstr</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SLDDB.create_database">
+<a class="viewcode-back" href="../../../orsopy.slddb.database.html#orsopy.slddb.database.SLDDB.create_database">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_database</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_table</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SLDDB.update_fields">
+<a class="viewcode-back" href="../../../orsopy.slddb.database.html#orsopy.slddb.database.SLDDB.update_fields">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># add columns not currently available</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM </span><span class="si">%s</span><span class="s2"> LIMIT 1&quot;</span> <span class="o">%</span> <span class="n">DB_MATERIALS_NAME</span><span class="p">)</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">description</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">DB_MATERIALS_FIELDS</span><span class="p">)</span> <span class="ow">and</span> <span class="n">DB_MATERIALS_FIELDS</span> <span class="o">==</span> <span class="n">fields</span><span class="p">[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">DB_MATERIALS_FIELDS</span><span class="p">)]:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">DB_MATERIALS_FIELDS</span><span class="p">[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)]</span> <span class="o">!=</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="c1"># need to reorder and/or add/remove columns of the database, requires copy of table</span>
+            <span class="n">name_type</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="n">ci</span><span class="o">.</span><span class="n">sql_type</span><span class="p">,</span> <span class="p">(</span><span class="n">di</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;DEFAULT </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">di</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">fi</span><span class="p">,</span> <span class="n">ci</span><span class="p">,</span> <span class="n">di</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">DB_MATERIALS_FIELDS</span><span class="p">,</span> <span class="n">DB_MATERIALS_CONVERTERS</span><span class="p">,</span> <span class="n">DB_MATERIALS_FIELD_DEFAULTS</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">qstr</span> <span class="o">=</span> <span class="s2">&quot;CREATE TABLE tmp_table (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name_type</span><span class="p">))</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">qstr</span><span class="p">)</span>
+            <span class="n">jf</span> <span class="o">=</span> <span class="p">[</span><span class="n">field</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span> <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">DB_MATERIALS_FIELDS</span><span class="p">]</span>
+            <span class="n">qstr</span> <span class="o">=</span> <span class="s2">&quot;INSERT INTO tmp_table (</span><span class="si">%s</span><span class="s2">) SELECT </span><span class="si">%s</span><span class="s2"> FROM </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">jf</span><span class="p">),</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">jf</span><span class="p">),</span> <span class="n">DB_MATERIALS_NAME</span><span class="p">)</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">qstr</span><span class="p">)</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;DROP TABLE </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">DB_MATERIALS_NAME</span><span class="p">)</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ALTER TABLE tmp_table RENAME TO </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">DB_MATERIALS_NAME</span><span class="p">)</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="c1"># append new columns</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="n">name_type</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="n">ci</span><span class="o">.</span><span class="n">sql_type</span><span class="p">,</span> <span class="p">(</span><span class="n">di</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;DEFAULT </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">di</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">fi</span><span class="p">,</span> <span class="n">ci</span><span class="p">,</span> <span class="n">di</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">DB_MATERIALS_FIELDS</span><span class="p">[</span><span class="n">start</span><span class="p">:],</span> <span class="n">DB_MATERIALS_CONVERTERS</span><span class="p">[</span><span class="n">start</span><span class="p">:],</span> <span class="n">DB_MATERIALS_FIELD_DEFAULTS</span><span class="p">[</span><span class="n">start</span><span class="p">:]</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ALTER TABLE </span><span class="si">%s</span><span class="s2"> ADD </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">DB_MATERIALS_NAME</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name_type</span><span class="p">)))</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SLDDB.backup">
+<a class="viewcode-back" href="../../../orsopy.slddb.database.html#orsopy.slddb.database.SLDDB.backup">[docs]</a>
+    <span class="k">def</span> <span class="nf">backup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="c1"># make a copy of the open database</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">out</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">backup</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

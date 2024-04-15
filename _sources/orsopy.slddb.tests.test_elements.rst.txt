@@ -1,0 +1,7 @@
+orsopy.slddb.tests.test\_elements module
+========================================
+
+.. automodule:: orsopy.slddb.tests.test_elements
+   :members:
+   :undoc-members:
+   :show-inheritance:

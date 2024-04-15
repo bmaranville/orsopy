@@ -1,0 +1,23 @@
+orsopy.fileio.tests package
+===========================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   orsopy.fileio.tests.test_base
+   orsopy.fileio.tests.test_data_source
+   orsopy.fileio.tests.test_model_language
+   orsopy.fileio.tests.test_orso
+   orsopy.fileio.tests.test_reduction
+   orsopy.fileio.tests.test_schema
+
+Module contents
+---------------
+
+.. automodule:: orsopy.fileio.tests
+   :members:
+   :undoc-members:
+   :show-inheritance:

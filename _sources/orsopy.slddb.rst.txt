@@ -1,0 +1,34 @@
+orsopy.slddb package
+====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   orsopy.slddb.element_table
+   orsopy.slddb.tests
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   orsopy.slddb.comparators
+   orsopy.slddb.constants
+   orsopy.slddb.converters
+   orsopy.slddb.database
+   orsopy.slddb.dbconfig
+   orsopy.slddb.importers
+   orsopy.slddb.material
+   orsopy.slddb.webapi
+
+Module contents
+---------------
+
+.. automodule:: orsopy.slddb
+   :members:
+   :undoc-members:
+   :show-inheritance:

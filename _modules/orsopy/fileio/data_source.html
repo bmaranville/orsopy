@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orsopy.fileio.data_source &mdash; orsopy 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/ORSO_Logo_bear.svg"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            orsopy
+          </a>
+              <div class="version">
+                1.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documents.html">Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">orsopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">orsopy.fileio.data_source</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for orsopy.fileio.data_source</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Implementation of the data_source for the ORSO header.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">AlternatingField</span><span class="p">,</span> <span class="n">ComplexValue</span><span class="p">,</span> <span class="n">File</span><span class="p">,</span> <span class="n">Header</span><span class="p">,</span> <span class="n">Person</span><span class="p">,</span> <span class="n">Value</span><span class="p">,</span> <span class="n">ValueRange</span><span class="p">,</span> <span class="n">ValueVector</span>
+<span class="kn">from</span> <span class="nn">.model_language</span> <span class="kn">import</span> <span class="n">SampleModel</span>
+
+<span class="c1"># typing stuff introduced in python 3.8</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.typing_backport</span> <span class="kn">import</span> <span class="n">Literal</span>
+
+
+<div class="viewcode-block" id="Experiment">
+<a class="viewcode-back" href="../../../orsopy.fileio.data_source.html#orsopy.fileio.Experiment">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Experiment</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A definition of the experiment performed.</span>
+
+<span class="sd">    :param title: Proposal or project title.</span>
+<span class="sd">    :param instrument: Reflectometer identifier.</span>
+<span class="sd">    :param start_date: Start date for the experiment.</span>
+<span class="sd">    :param probe: Radiation probe, either :code:`&#39;neutron&#39;` or</span>
+<span class="sd">        :code:`&#39;x-ray&#39;`.</span>
+<span class="sd">    :param facility: Facility where the experiment was performed.</span>
+<span class="sd">    :param proposalID: Identifier for experiment at a facility.</span>
+<span class="sd">    :param doi: Digital object identifier for the experiment, possibly</span>
+<span class="sd">        provided by the facility.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">instrument</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">start_date</span><span class="p">:</span> <span class="n">datetime</span>
+    <span class="n">probe</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;neutron&quot;</span><span class="p">,</span> <span class="s2">&quot;x-ray&quot;</span><span class="p">]</span>
+    <span class="n">facility</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">proposalID</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">doi</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="Sample">
+<a class="viewcode-back" href="../../../orsopy.fileio.data_source.html#orsopy.fileio.Sample">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Sample</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A description of the sample measured.</span>
+
+<span class="sd">    :param name: An identified for the individual sample or the subject and</span>
+<span class="sd">        state being measured.</span>
+<span class="sd">    :param category: Simple sample description, front (beam side) / back,</span>
+<span class="sd">        each side should be one of :code:`&#39;solid/liquid&#39;`,</span>
+<span class="sd">        :code:`&#39;liquid/solid&#39;`, :code:`&#39;gas/liquid&#39;`,</span>
+<span class="sd">        :code:`&#39;liquid/liquid&#39;`, :code:`&#39;solid/gas&#39;`, :code:`&#39;gas/solid&#39;`.</span>
+<span class="sd">    :param composition: Notes on the nominal composition of the sample e.g.</span>
+<span class="sd">        :code:`Si | SiO2 (20 angstrom) | Fe (200 angstrom) |</span>
+<span class="sd">        air (beam side)`.</span>
+<span class="sd">    :param description: Further details of the sample, e.g. size.</span>
+<span class="sd">    :param size: Sample size in x, y, z direction, where z is parallel to the surface normal</span>
+<span class="sd">        and x is along the beam direction (important for footprint correction).</span>
+<span class="sd">    :param environment: Name of the sample environment device(s).</span>
+<span class="sd">    :param sample_parameters: Dictionary of sample parameters. See Sample.PARAMETER_DEFAULT_KEYS</span>
+<span class="sd">        for some common names defined in the specification.</span>
+<span class="sd">    :param model: A model using the simple model description  (https://www.reflectometry.org/projects/simple_model)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">category</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">composition</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ValueVector</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">environment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">sample_parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Value</span><span class="p">,</span> <span class="n">ValueRange</span><span class="p">,</span> <span class="n">ValueVector</span><span class="p">,</span> <span class="n">ComplexValue</span><span class="p">,</span> <span class="n">AlternatingField</span><span class="p">]]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Using keys for parameters and Value* objects for values.&quot;</span><span class="p">})</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SampleModel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">PARAMETER_DEFAULT_KEYS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;temperature&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;magnetic_field&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;electric_potential&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;electric_current&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;electric_ac_field&quot;</span><span class="p">,</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Polarization">
+<a class="viewcode-back" href="../../../orsopy.fileio.data_source.html#orsopy.fileio.Polarization">[docs]</a>
+<span class="k">class</span> <span class="nc">Polarization</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Polarization of the beam used for the reflectivity.</span>
+
+<span class="sd">    Neutrons:</span>
+<span class="sd">    The first symbol indicates the magnetisation direction of the incident</span>
+<span class="sd">    beam, the second symbol indicates the direction of the scattered</span>
+<span class="sd">    beam. If either polarization or analysis are not employed the</span>
+<span class="sd">    symbol is replaced by &quot;o&quot;.</span>
+
+<span class="sd">    X-rays:</span>
+<span class="sd">    Uses the conventional names pi, sigma, left and right. In experiments</span>
+<span class="sd">    with polarization analysis the incident and outgoing polarizations</span>
+<span class="sd">    are separated with an underscore &quot;_&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">unpolarized</span> <span class="o">=</span> <span class="s2">&quot;unpolarized&quot;</span>
+    <span class="c1"># half polarized states</span>
+    <span class="n">po</span> <span class="o">=</span> <span class="s2">&quot;po&quot;</span>
+    <span class="n">mo</span> <span class="o">=</span> <span class="s2">&quot;mo&quot;</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="s2">&quot;op&quot;</span>
+    <span class="n">om</span> <span class="o">=</span> <span class="s2">&quot;om&quot;</span>
+    <span class="c1"># full polarization analysis</span>
+    <span class="n">mm</span> <span class="o">=</span> <span class="s2">&quot;mm&quot;</span>
+    <span class="n">mp</span> <span class="o">=</span> <span class="s2">&quot;mp&quot;</span>
+    <span class="n">pm</span> <span class="o">=</span> <span class="s2">&quot;pm&quot;</span>
+    <span class="n">pp</span> <span class="o">=</span> <span class="s2">&quot;pp&quot;</span>
+    <span class="c1"># x-ray polarizations</span>
+    <span class="n">pi</span> <span class="o">=</span> <span class="s2">&quot;pi&quot;</span>  <span class="c1"># in scattering plane</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="s2">&quot;sigma&quot;</span>  <span class="c1"># perpendicular to scattering plane</span>
+    <span class="n">left</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span>  <span class="c1"># circular left</span>
+    <span class="n">right</span> <span class="o">=</span> <span class="s2">&quot;right&quot;</span>  <span class="c1"># circular right</span>
+    <span class="n">pi_pi</span> <span class="o">=</span> <span class="s2">&quot;pi_pi&quot;</span>
+    <span class="n">sigma_sigma</span> <span class="o">=</span> <span class="s2">&quot;sigma_sigma&quot;</span>
+    <span class="n">pi_sigma</span> <span class="o">=</span> <span class="s2">&quot;pi_sigma&quot;</span>
+    <span class="n">sigma_pi</span> <span class="o">=</span> <span class="s2">&quot;sigma_pi&quot;</span>
+
+<div class="viewcode-block" id="Polarization.yaml_representer">
+<a class="viewcode-back" href="../../../orsopy.fileio.data_source.html#orsopy.fileio.Polarization.yaml_representer">[docs]</a>
+    <span class="k">def</span> <span class="nf">yaml_representer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dumper</span><span class="p">:</span> <span class="n">yaml</span><span class="o">.</span><span class="n">Dumper</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="n">dumper</span><span class="o">.</span><span class="n">represent_str</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="InstrumentSettings">
+<a class="viewcode-back" href="../../../orsopy.fileio.data_source.html#orsopy.fileio.InstrumentSettings">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">InstrumentSettings</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Settings associated with the instrumentation.</span>
+
+<span class="sd">    :param incident_angle: Angle (range) of incidence.</span>
+<span class="sd">    :param wavelength: Neutron/x-ray wavelength (range).</span>
+<span class="sd">    :param polarization: Radiation polarization as one of</span>
+<span class="sd">        :code:`&#39;unpolarized&#39;`, :code:`&#39;p&#39;`, :code:`&#39;m&#39;`, :code:`&#39;pp&#39;`,</span>
+<span class="sd">        :code:`&#39;pm&#39;`, :code:`&#39;mp&#39;`, :code:`&#39;mm&#39;`, or a</span>
+<span class="sd">        :py:class:`orsopy.fileio.base.ValueVector`.</span>
+<span class="sd">    :param configuration: Description of the instreument configuration (full</span>
+<span class="sd">        polarized/liquid surface/etc).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">incident_angle</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Value</span><span class="p">,</span> <span class="n">ValueRange</span><span class="p">]</span>
+    <span class="n">wavelength</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Value</span><span class="p">,</span> <span class="n">ValueRange</span><span class="p">]</span>
+    <span class="n">polarization</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Polarization</span><span class="p">,</span> <span class="n">ValueVector</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Polarization</span><span class="o">.</span><span class="n">unpolarized</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Polarization described as unpolarized/ po/ mo / op / om / pp / pm / mp / mm / vector&quot;</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">configuration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;half / full polarized | liquid_surface | etc&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="fm">__repr__</span> <span class="o">=</span> <span class="n">Header</span><span class="o">.</span><span class="n">_staggered_repr</span></div>
+
+
+
+<div class="viewcode-block" id="Measurement">
+<a class="viewcode-back" href="../../../orsopy.fileio.data_source.html#orsopy.fileio.Measurement">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Measurement</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The measurement elements for the header.</span>
+
+<span class="sd">    :param instrument_settings: Instrumentation details.</span>
+<span class="sd">    :param data_files: Raw data files produced in the measurement.</span>
+<span class="sd">    :param additional_files: Raw reference files used in the reduction.</span>
+<span class="sd">    :param scheme: Measurement scheme (one of :code:`&#39;angle-dispersive&#39;`,</span>
+<span class="sd">        :code:`&#39;energy-dispersive&#39;`/:code:`&#39;angle- and energy-dispersive&#39;`).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">instrument_settings</span><span class="p">:</span> <span class="n">InstrumentSettings</span>
+    <span class="n">data_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
+    <span class="n">additional_files</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">scheme</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;angle- and energy-dispersive&quot;</span><span class="p">,</span> <span class="s2">&quot;angle-dispersive&quot;</span><span class="p">,</span> <span class="s2">&quot;energy-dispersive&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="fm">__repr__</span> <span class="o">=</span> <span class="n">Header</span><span class="o">.</span><span class="n">_staggered_repr</span></div>
+
+
+
+<div class="viewcode-block" id="DataSource">
+<a class="viewcode-back" href="../../../orsopy.fileio.data_source.html#orsopy.fileio.DataSource">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DataSource</span><span class="p">(</span><span class="n">Header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The data_source object definition.</span>
+
+<span class="sd">    :param owner: This refers to the actual owner of the data set, i.e. the</span>
+<span class="sd">        main proposer or the person doing the measurement on a lab</span>
+<span class="sd">        reflectometer.</span>
+<span class="sd">    :param experiment: Details of the experimental.</span>
+<span class="sd">    :param sample: Sample information.</span>
+<span class="sd">    :param measurement: Measurement specifics.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">owner</span><span class="p">:</span> <span class="n">Person</span>
+    <span class="n">experiment</span><span class="p">:</span> <span class="n">Experiment</span>
+    <span class="n">sample</span><span class="p">:</span> <span class="n">Sample</span>
+    <span class="n">measurement</span><span class="p">:</span> <span class="n">Measurement</span>
+    <span class="n">_orso_optionals</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="fm">__repr__</span> <span class="o">=</span> <span class="n">Header</span><span class="o">.</span><span class="n">_staggered_repr</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, ORSO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

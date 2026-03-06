@@ -37,10 +37,10 @@ jobs:
           pytest --pyargs orsopy
 
   backport:
-    runs-on: macos-13
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: ["3.6-slim-buster", "3.7-slim-buster"]
 
     steps:
       - uses: actions/checkout@v4
